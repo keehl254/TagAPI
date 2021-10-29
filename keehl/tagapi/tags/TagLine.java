@@ -9,29 +9,29 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class TagLine {
 
-    private final Tag tag;
+    private Tag tag;
 
     private final TagEntity bottomEntity;
     private final TagEntity topEntity;
 
     private final Map<UUID, Boolean> visibilityMap = new HashMap<>();
 
-    private BiFunction<Player, Entity, String> getName;
-    private BiFunction<Player, Entity, Boolean> keepSpaceWhenNull;
+    private Function<Player, String> getName;
+    private Function<Player, Boolean> keepSpaceWhenNull;
 
     private final int importance;
 
     private boolean isInBody;
 
-    public TagLine(Tag tag, int importance) {
-        this(tag, importance, false);
+    public TagLine(int importance) {
+        this(importance, false);
     }
 
-    protected TagLine(Tag tag, int importance, boolean removeFish) {
-        this.tag = tag;
+    protected TagLine(int importance, boolean removeFish) {
         this.importance = importance;
 
         TagEntity tempEntity;
@@ -48,19 +48,23 @@ public class TagLine {
         tempEntity = new TagEntity(this, tempEntity, EntityType.SLIME);
         topEntity = new TagEntity(this, tempEntity, EntityType.ARMOR_STAND,true);
 
-        getName = (x, y) -> null;
-        keepSpaceWhenNull = (x, y) -> true;
+        getName = (x) -> null;
+        keepSpaceWhenNull = (x) -> true;
+    }
+
+    protected void setTag(Tag tag) {
+        this.tag = tag;
     }
 
     public void setInBody() {
         this.isInBody = true;
     }
 
-    public void setGetName(BiFunction<Player, Entity, String> getName) {
+    public void setGetName(Function<Player, String> getName) {
         this.getName = getName;
     }
 
-    public void setKeepSpaceWhenNull(BiFunction<Player, Entity, Boolean> keepSpaceWhenNull) {
+    public void setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
         this.keepSpaceWhenNull = keepSpaceWhenNull;
     }
 
@@ -93,8 +97,8 @@ public class TagLine {
     }
 
     public boolean shouldHideFrom(Player viewer) {
-        String name = getName.apply(viewer, this.tag.getTarget());
-        return !this.isVisibleTo(viewer) || (name == null && !keepSpaceWhenNull.apply(viewer, this.tag.getTarget()));
+        String name = getName.apply(viewer);
+        return !this.isVisibleTo(viewer) || (name == null && !keepSpaceWhenNull.apply(viewer));
     }
 
     public boolean isInBody() {
@@ -123,7 +127,7 @@ public class TagLine {
     }
 
     public String getNameFor(Player viewer) {
-        return this.getName.apply(viewer, this.tag.getTarget());
+        return this.getName.apply(viewer);
     }
 
 

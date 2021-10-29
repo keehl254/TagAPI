@@ -10,16 +10,17 @@ public class TestTag extends Tag {
     public TestTag(Entity target) {
         super(target);
 
-        TagLine tempLine = new TagLine(this, 10);
-        tempLine.setGetName((player, entity) -> ChatColor.GREEN + "" + ChatColor.BOLD + entity.getName());
+        TagLine tempLine = new TagLine(10);
+        tempLine.setGetName(player -> ChatColor.GREEN + "" + ChatColor.BOLD + target.getName());
         this.addTagLine(tempLine);
 
-        tempLine = new TagLine(this, 9);
-        tempLine.setGetName((player, entity) -> ChatColor.GOLD + "" + ChatColor.BOLD + "Second Line Test");
+        tempLine = new TagLine(9);
+        tempLine.setGetName(player -> ChatColor.GOLD + "" + ChatColor.BOLD + "Second Line Test");
         this.addTagLine(tempLine);
 
-        tempLine = new TagLine(this, 8);
-        tempLine.setGetName((player, entity) -> ChatColor.GREEN + "" + ChatColor.BOLD + "Third Line Test");
+        tempLine = new TagLine(8);
+        tempLine.setGetName(player -> ChatColor.GREEN + "" + ChatColor.BOLD + "Third Line Test");
+        tempLine.setKeepSpaceWhenNull(player -> false);
         this.addTagLine(tempLine);
 
     }

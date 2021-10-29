@@ -21,11 +21,12 @@ public class Tag {
     public Tag(Entity target) {
         this.target = target;
 
-        this.addTagLine(new TagLine(this, Integer.MIN_VALUE, true));
+        this.addTagLine(new TagLine(Integer.MIN_VALUE, true));
         this.tagLines.get(0).setInBody();
     }
 
     public void addTagLine(TagLine tagLine) {
+        tagLine.setTag(this);
         this.tagLines.add(tagLine);
         this.tagLines.sort(Comparator.comparingInt(TagLine::getImportance));
     }
