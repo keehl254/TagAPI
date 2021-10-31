@@ -46,7 +46,7 @@ There are many great uses for a resource such as this, but I wanted to compile a
 <h2>Client Side Only</h2>
 Yep! It's true! This API does not create any actual entities to work. The entirety of it uses packets to trick the client into thinking an entity exists. What are the benefits, though? Well, there are quite a few. <br><br>First off, no messes. The last thing a server owner would like is for a plugin to incorrectly shutdown, and now there are random floating tags around the world where entities once were. With the entirety of this system using packets and only existing on the clients end, you will not have to worry about this ever!
 <br><br>Second, and my personal favorite, is per-player customization. You can have the lines of the tags appear different to each individual player, or even hide specific lines from individual players.
-<br><br><p align = "center"><img src="https://i.imgur.com/5vqpHK6.png" style="width:75%;max-width:750px;"></p>
+<!--<br><br><p align = "center"><img src="https://i.imgur.com/5vqpHK6.png" style="width:75%;max-width:750px;" --></p>
 <h2>How To Install On a Server</h2>
 Easy! There are two ways you can use this resource. This resource can either be downloaded from the SpigotMC Plugin Page as an individual plugin to be dropped into the servers plugins directory, or you can directly integrate it into your code.
 <br>If you are directly integrating this API into your own code, then the methods to enable and disable it are simple:
@@ -60,7 +60,7 @@ and onDisable:
 
       TagAPI.onDisable();
 <br>
-<h2>Creating and Giving Tags</h2>
+<h2>Creating, Giving, and Updating Tags</h2>
 Tags can be created by extending the class Tag and adding TagLine instances like so:
 <br>
 
@@ -109,6 +109,17 @@ The same can be accomplished through the TagAPI class.
     TagAPI.updateTag(entity); // Update the entities tag
     TagAPI.removeTag(entity); // Remove a tag from an entity
 
+This API also has a "builder" to make tag creation easier. An example would be like:
+
+    TagBuilder.create(entity).withLine(pl->"First Line").withLine(pl->"Second Line").withLine(pl->"Third",pl->true).build().giveTag();
+
+Where TagBuilder#withLine will accept a function accepting a player and returning a string and optionally support a second argument for keeping lines when null.
+<br><br>
+I lastly wanted to share that it is possible to set default tags for entity types using the method in the following example:
+
+    TagAPI.setDefaultTag(EntityType.PIG, ExampleTag::new);
+
+All viewed entities will be checked only once if they should have a tag. This means that you can easily remove a tag from an entity, and it will not respawn itself.
 <h2>Dependencies</h2>
 TagAPI requires ProtocolLib to run, and will only run in version 1.17.1 or higher as of current.
 
