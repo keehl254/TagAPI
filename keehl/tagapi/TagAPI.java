@@ -100,14 +100,23 @@ public class TagAPI {
     }
 
     /**
-     * Adds or replaces the tag for a provided entity
+     * Adds or replaces the tag for the tags target
+     * @param entity    The entity that the tag should be applied to
+     * @param tagConstructor    The constructor for a tag to be added to an entity
+     */
+    public static void giveTag(Entity entity, Function<Entity,Tag> tagConstructor) {
+        tagConstructor.apply(entity).giveTag();
+    }
+
+    /**
+     * Removes the tag for a provided entity
      *
      * @param entity The entity that the tag should be provided for
-     * @param tag    The tag that should be provided to the entity
      */
-    public static void giveTag(Entity entity, Tag tag) {
-        tagTracker.setEntityTag(entity.getEntityId(), tag);
-        TagUtil.getViewers(entity, 1).forEach(tag::spawnTagFor);
+    public static void removeTag(Entity entity) {
+        Tag tag = tagTracker.getEntityTag(entity.getEntityId());
+        if(tag != null)
+            tag.removeTag();
     }
 
     /**

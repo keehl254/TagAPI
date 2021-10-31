@@ -62,7 +62,7 @@ public class TagListener implements Listener {
                             return;
 
                         entity.setMetadata("had-default-tag", new FixedMetadataValue(TagAPI.getPlugin(), true));
-                        Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> TagAPI.giveTag(entity, TagAPI.entityDefaultTags.get(entity.getType()).apply(entity)), 1L);
+                        Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> TagAPI.entityDefaultTags.get(entity.getType()).apply(entity).giveTag(), 1L);
                         return;
                     }
 

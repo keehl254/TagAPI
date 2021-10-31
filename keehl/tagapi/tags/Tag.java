@@ -1,6 +1,7 @@
 package keehl.tagapi.tags;
 
 import keehl.tagapi.TagAPI;
+import keehl.tagapi.util.TagUtil;
 import keehl.tagapi.wrappers.AbstractPacket;
 import keehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
@@ -33,6 +34,10 @@ public class Tag {
 
     public Entity getTarget() {
         return this.target;
+    }
+
+    public List<TagLine> getTagLines() {
+        return this.tagLines;
     }
 
     public void spawnTagFor(Player viewer) {
@@ -102,6 +107,20 @@ public class Tag {
 
             metaPackets.forEach(p -> p.sendPacket(viewer));
         }
+    }
+
+    public void giveTag() {
+        Tag oldTag = TagAPI.getTag(this.target);
+        TagAPI.getTagTracker().setEntityTag(this.target.getEntityId(), this);
+        if(oldTag != null)
+            oldTag.getTagLines().forEach(TagLine::stopTrackingEntities);
+        this.getTagLines().forEach(TagLine::trackEntities);
+        TagUtil.getViewers(this.target, 1).forEach(this::spawnTagFor);
+    }
+
+    public void removeTag() {
+        TagAPI.getTagTracker().setEntityTag(this.target.getEntityId(), null);
+        Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> this.getTagLines().forEach(TagLine::stopTrackingEntities), 1L);
     }
 
     public void updateTag() {

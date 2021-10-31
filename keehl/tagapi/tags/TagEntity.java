@@ -2,6 +2,7 @@ package keehl.tagapi.tags;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import keehl.tagapi.TagAPI;
+import keehl.tagapi.TagTracker;
 import keehl.tagapi.util.TagUtil;
 import keehl.tagapi.util.VersionFile;
 import keehl.tagapi.util.WatcherType;
@@ -62,9 +63,9 @@ public class TagEntity {
         entityWatchers.add(EntityType.SLIME, new DataEntry(file.getDataWatcherIndex(EntityType.SLIME, WatcherType.SIZE), Integer.class, -1));
         entityWatchers.add(EntityType.TURTLE, new DataEntry(file.getDataWatcherIndex(EntityType.TURTLE, WatcherType.IS_BABY), Boolean.class, true));
 
-        Field[] fields  = Entity.class.getDeclaredFields();
-        for(Field f : fields) {
-            if(f.getType().equals(AtomicInteger.class)) {
+        Field[] fields = Entity.class.getDeclaredFields();
+        for (Field f : fields) {
+            if (f.getType().equals(AtomicInteger.class)) {
                 f.setAccessible(true);
                 try {
                     atomicEntityID = (AtomicInteger) f.get(null);
@@ -89,7 +90,6 @@ public class TagEntity {
         this.nameEntity = nameEntity;
         if (parent != null)
             parent.setChild(this);
-        TagAPI.getTagTracker().trackEntity(this);
     }
 
     public int getEntityID() {
@@ -102,6 +102,10 @@ public class TagEntity {
 
     public TagLine getTagLine() {
         return this.tagLine;
+    }
+
+    public TagEntity getChild() {
+        return this.child;
     }
 
     protected void setChild(TagEntity child) {
@@ -137,8 +141,8 @@ public class TagEntity {
         entityWatchers.get(this.entityType).forEach(entry -> entry.apply(watcher));
         String name;
         if (this.nameEntity && (name = this.tagLine.getNameFor(viewer)) != null) {
-            TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType,WatcherType.NAME_VISIBLE), Boolean.class, true); // Name Visible
-            TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType,WatcherType.CUSTOM_NAME), WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.ofNullable(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(TextComponent.fromLegacyText(name)))));
+            TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.NAME_VISIBLE), Boolean.class, true); // Name Visible
+            TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.CUSTOM_NAME), WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.ofNullable(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(TextComponent.fromLegacyText(name)))));
         }
 
         wrapper.setMetadata(watcher.getWatchableObjects());
@@ -172,6 +176,20 @@ public class TagEntity {
         wrapper.setEntityID(this.parent == null ? defaultParentID : this.parent.getEntityID());
         wrapper.setPassengerIds(new int[]{this.entityID});
         return wrapper;
+    }
+
+    protected void trackLine() {
+        if (this.child != null)
+            this.child.trackLine();
+
+        TagAPI.getTagTracker().trackEntity(this);
+    }
+
+    protected void stopTrackingLine() {
+        if (this.child != null)
+            this.child.stopTrackingLine();
+
+        TagAPI.getTagTracker().stopTrackingEntity(this);
     }
 
     public void destroy(Wrappers.DestroyPacket wrapper) {

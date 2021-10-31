@@ -4,24 +4,25 @@ import keehl.tagapi.tags.Tag;
 import keehl.tagapi.tags.TagLine;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.Listener;
 
-public class TestTag extends Tag {
+public class TestTag extends Tag implements Listener {
 
     public TestTag(Entity target) {
         super(target);
 
-        TagLine tempLine = new TagLine(10);
-        tempLine.setGetName(player -> ChatColor.GREEN + "" + ChatColor.BOLD + target.getName());
-        this.addTagLine(tempLine);
+        this.addTagLine(new TagLine(10).setGetName(player ->
+                ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
+        ));
 
-        tempLine = new TagLine(9);
-        tempLine.setGetName(player -> ChatColor.GOLD + "" + ChatColor.BOLD + "Second Line Test");
-        this.addTagLine(tempLine);
+        this.addTagLine(new TagLine(9).setGetName(player ->
+                ChatColor.GOLD + "" + ChatColor.BOLD + "Second Line Test"
+        ));
 
-        tempLine = new TagLine(8);
-        tempLine.setGetName(player -> ChatColor.GREEN + "" + ChatColor.BOLD + "Third Line Test");
-        tempLine.setKeepSpaceWhenNull(player -> false);
-        this.addTagLine(tempLine);
+        this.addTagLine(new TagLine(8).setGetName(player ->
+                ChatColor.GREEN + "" + ChatColor.BOLD + "Third Line Test"
+        ).setKeepSpaceWhenNull(player -> false));
+
 
     }
 

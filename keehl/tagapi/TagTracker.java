@@ -3,9 +3,12 @@ package keehl.tagapi;
 import keehl.tagapi.tags.Tag;
 import keehl.tagapi.tags.TagEntity;
 import keehl.tagapi.wrappers.Wrappers;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TagTracker {
@@ -17,13 +20,20 @@ public class TagTracker {
         this.tagEntities.put(entity.getEntityID(), entity);
     }
 
+    public void stopTrackingEntity(TagEntity entity){
+        this.tagEntities.remove(entity.getEntityID());
+    }
+
     public void setEntityTag(Integer entityID, Tag tag) {
-        if (this.entityTags.containsKey(entityID)) {
+        if (this.entityTags.containsKey(entityID) || tag == null) {
             Wrappers.DestroyPacket wrapper = Wrappers.DESTROY.get();
             this.entityTags.get(entityID).destroy(wrapper);
             wrapper.broadcastPacket();
         }
-        this.entityTags.put(entityID, tag);
+        if(tag != null)
+            this.entityTags.put(entityID, tag);
+        else
+            this.entityTags.remove(entityID);
     }
 
     public Tag getEntityTag(Integer entityID) {

@@ -46,7 +46,7 @@ public class TagLine {
         }
 
         tempEntity = new TagEntity(this, tempEntity, EntityType.SLIME);
-        topEntity = new TagEntity(this, tempEntity, EntityType.ARMOR_STAND,true);
+        topEntity = new TagEntity(this, tempEntity, EntityType.ARMOR_STAND, true);
 
         getName = (x) -> null;
         keepSpaceWhenNull = (x) -> true;
@@ -60,12 +60,22 @@ public class TagLine {
         this.isInBody = true;
     }
 
-    public void setGetName(Function<Player, String> getName) {
-        this.getName = getName;
+    protected void trackEntities() {
+        this.bottomEntity.trackLine();
     }
 
-    public void setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
+    protected void stopTrackingEntities() {
+        this.bottomEntity.stopTrackingLine();
+    }
+
+    public TagLine setGetName(Function<Player, String> getName) {
+        this.getName = getName;
+        return this;
+    }
+
+    public TagLine setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
         this.keepSpaceWhenNull = keepSpaceWhenNull;
+        return this;
     }
 
     private boolean isVisibleTo(Player player) {
@@ -124,6 +134,16 @@ public class TagLine {
         this.bottomEntity.getMountPackets(packets, parent == null ? this.tag.getTarget().getEntityId() : parent.getTopEntity().getEntityID());
         Collections.reverse(packets);
         return packets;
+    }
+
+    public List<TagEntity> getTagEntities() {
+        List<TagEntity> entities = new ArrayList<>();
+        TagEntity entity = this.bottomEntity;
+        while (entity != null) {
+            entities.add(entity);
+            entity = entity.getChild();
+        }
+        return entities;
     }
 
     public String getNameFor(Player viewer) {
