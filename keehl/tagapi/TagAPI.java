@@ -4,7 +4,7 @@ import keehl.tagapi.api.Tag;
 import keehl.tagapi.tags.BaseTag;
 import keehl.tagapi.tags.BaseTagEntity;
 import keehl.tagapi.util.VersionFile;
-import keehl.tagapi.wrappers.v1171.Wrapper1771;
+import keehl.tagapi.wrappers.versions.Wrapper1_17_1;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -39,8 +39,9 @@ public class TagAPI {
         String name = Bukkit.getServer().getClass().getPackage().getName();
         String version = name.substring(name.lastIndexOf('.') + 1);
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (version) {
-            case "v1_17_R1" -> Wrapper1771.init();
+            case "v1_17_R1" -> Wrapper1_17_1.init();
             default -> {
             }
         }
@@ -52,6 +53,7 @@ public class TagAPI {
     /**
      * Disables the listener and destroys all active tags
      */
+    @SuppressWarnings("deprecation")
     public static void onDisable() {
         listener.onDisable();
         if (!MinecraftServer.getServer().isStopped())

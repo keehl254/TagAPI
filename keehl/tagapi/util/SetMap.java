@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TreeSet<K, E> {
+public class SetMap<K, E> {
 
 	private final Map<K, List<E>> values = new HashMap<>();
 

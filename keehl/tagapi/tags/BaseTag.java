@@ -126,7 +126,7 @@ public class BaseTag extends Tag {
         if (oldTag != null)
             oldTag.getTagLines().stream().map(i -> (BaseTagLine) i).forEach(BaseTagLine::stopTrackingEntities);
         this.getTagLines().stream().map(i -> (BaseTagLine) i).forEach(BaseTagLine::trackEntities);
-        TagUtil.getViewers(this.target, 1).forEach(this::spawnTagFor);
+        TagUtil.getViewers(this.target).forEach(this::spawnTagFor);
     }
 
     public void removeTag() {

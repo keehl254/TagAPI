@@ -6,7 +6,7 @@ import keehl.tagapi.api.TagEntity;
 import keehl.tagapi.util.TagUtil;
 import keehl.tagapi.util.VersionFile;
 import keehl.tagapi.util.WatcherType;
-import keehl.tagapi.util.TreeSet;
+import keehl.tagapi.util.SetMap;
 import keehl.tagapi.wrappers.AbstractPacket;
 import keehl.tagapi.wrappers.AbstractSpawnPacket;
 import keehl.tagapi.wrappers.Wrappers;
@@ -36,7 +36,7 @@ public class BaseTagEntity implements TagEntity {
 
     private final boolean nameEntity;
 
-    private static final TreeSet<EntityType, DataEntry> entityWatchers = new TreeSet<>();
+    private static final SetMap<EntityType, DataEntry> entityWatchers = new SetMap<>();
 
     private static VersionFile versionFile;
 
