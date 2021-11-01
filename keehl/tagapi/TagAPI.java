@@ -1,9 +1,8 @@
 package keehl.tagapi;
 
-import keehl.tagapi.instances.TestTag;
-import keehl.tagapi.tags.Tag;
-import keehl.tagapi.tags.TagEntity;
-import keehl.tagapi.util.TagUtil;
+import keehl.tagapi.api.Tag;
+import keehl.tagapi.tags.BaseTag;
+import keehl.tagapi.tags.BaseTagEntity;
 import keehl.tagapi.util.VersionFile;
 import keehl.tagapi.wrappers.v1171.Wrapper1771;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class TagAPI {
 
@@ -36,7 +34,7 @@ public class TagAPI {
         TagAPI.plugin = javaPlugin;
 
         VersionFile versionFile = new VersionFile(javaPlugin);
-        TagEntity.init(versionFile);
+        BaseTagEntity.init(versionFile);
 
         String name = Bukkit.getServer().getClass().getPackage().getName();
         String version = name.substring(name.lastIndexOf('.') + 1);
@@ -104,7 +102,7 @@ public class TagAPI {
      * @param entity    The entity that the tag should be applied to
      * @param tagConstructor    The constructor for a tag to be added to an entity
      */
-    public static void giveTag(Entity entity, Function<Entity,Tag> tagConstructor) {
+    public static void giveTag(Entity entity, Function<Entity, BaseTag> tagConstructor) {
         tagConstructor.apply(entity).giveTag();
     }
 
@@ -155,7 +153,7 @@ public class TagAPI {
      * the tag.
      *
      * @param type The entity type the tag will be applied to
-     * @param tagConstructor A function or constructor that will create a tag for a provided entity.
+     * @param tagConstructor A function that will create a tag for a provided entity.
      */
     public static void setDefaultTag(EntityType type, Function<Entity, Tag> tagConstructor) {
         entityDefaultTags.put(type, tagConstructor);

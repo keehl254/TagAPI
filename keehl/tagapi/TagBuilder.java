@@ -1,7 +1,7 @@
 package keehl.tagapi;
 
-import keehl.tagapi.tags.Tag;
-import keehl.tagapi.tags.TagLine;
+import keehl.tagapi.api.Tag;
+import keehl.tagapi.tags.BaseTag;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -13,16 +13,16 @@ public class TagBuilder {
     private int priority = Integer.MAX_VALUE;
 
     private TagBuilder(Entity entity) {
-        this.tag = new Tag(entity);
+        this.tag = BaseTag.create(entity);
     }
 
     public TagBuilder withLine(Function<Player, String> getName) {
-        this.tag.addTagLine(new TagLine(priority--).setGetName(getName));
+        this.tag.addTagLine(priority--).setGetName(getName);
         return this;
     }
 
-    public TagBuilder withLine(Function<Player, String> getName, Function<Player,Boolean> keepSpaceWhenNull) {
-        this.tag.addTagLine(new TagLine(priority--).setGetName(getName).setKeepSpaceWhenNull(keepSpaceWhenNull));
+    public TagBuilder withLine(Function<Player, String> getName, Function<Player, Boolean> keepSpaceWhenNull) {
+        this.tag.addTagLine(priority--).setGetName(getName).setKeepSpaceWhenNull(keepSpaceWhenNull);
         return this;
     }
 

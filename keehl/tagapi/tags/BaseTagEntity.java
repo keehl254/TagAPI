@@ -2,7 +2,7 @@ package keehl.tagapi.tags;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import keehl.tagapi.TagAPI;
-import keehl.tagapi.TagTracker;
+import keehl.tagapi.api.TagEntity;
 import keehl.tagapi.util.TagUtil;
 import keehl.tagapi.util.VersionFile;
 import keehl.tagapi.util.WatcherType;
@@ -23,11 +23,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class TagEntity {
+public class BaseTagEntity implements TagEntity {
 
-    private final TagLine tagLine;
-    private final TagEntity parent;
-    private TagEntity child;
+    private final BaseTagLine tagLine;
+    private final BaseTagEntity parent;
+    private BaseTagEntity child;
 
     private final int entityID;
     private final UUID entityUUID;
@@ -77,11 +77,11 @@ public class TagEntity {
 
     }
 
-    public TagEntity(TagLine tagLine, TagEntity parent, EntityType entityType) {
+    public BaseTagEntity(BaseTagLine tagLine, BaseTagEntity parent, EntityType entityType) {
         this(tagLine, parent, entityType, false);
     }
 
-    public TagEntity(TagLine tagLine, TagEntity parent, EntityType entityType, boolean nameEntity) {
+    public BaseTagEntity(BaseTagLine tagLine, BaseTagEntity parent, EntityType entityType, boolean nameEntity) {
         this.tagLine = tagLine;
         this.parent = parent;
         this.entityID = atomicEntityID.incrementAndGet();
@@ -100,15 +100,15 @@ public class TagEntity {
         return this.entityUUID;
     }
 
-    public TagLine getTagLine() {
+    public BaseTagLine getTagLine() {
         return this.tagLine;
     }
 
-    public TagEntity getChild() {
+    public BaseTagEntity getChild() {
         return this.child;
     }
 
-    protected void setChild(TagEntity child) {
+    protected void setChild(BaseTagEntity child) {
         this.child = child;
     }
 

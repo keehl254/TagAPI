@@ -1,14 +1,13 @@
 package keehl.tagapi;
 
-import keehl.tagapi.tags.Tag;
-import keehl.tagapi.tags.TagEntity;
+import keehl.tagapi.api.Tag;
+import keehl.tagapi.api.TagEntity;
+import keehl.tagapi.tags.BaseTag;
+import keehl.tagapi.tags.BaseTagEntity;
 import keehl.tagapi.wrappers.Wrappers;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TagTracker {
@@ -16,21 +15,21 @@ public class TagTracker {
     private final Map<Integer, TagEntity> tagEntities = new HashMap<>();
     private final Map<Integer, Tag> entityTags = new HashMap<>();
 
-    public void trackEntity(TagEntity entity) {
+    public void trackEntity(BaseTagEntity entity) {
         this.tagEntities.put(entity.getEntityID(), entity);
     }
 
-    public void stopTrackingEntity(TagEntity entity){
+    public void stopTrackingEntity(BaseTagEntity entity) {
         this.tagEntities.remove(entity.getEntityID());
     }
 
-    public void setEntityTag(Integer entityID, Tag tag) {
+    public void setEntityTag(Integer entityID, BaseTag tag) {
         if (this.entityTags.containsKey(entityID) || tag == null) {
             Wrappers.DestroyPacket wrapper = Wrappers.DESTROY.get();
-            this.entityTags.get(entityID).destroy(wrapper);
+            ((BaseTag) this.entityTags.get(entityID)).destroy(wrapper);
             wrapper.broadcastPacket();
         }
-        if(tag != null)
+        if (tag != null)
             this.entityTags.put(entityID, tag);
         else
             this.entityTags.remove(entityID);
@@ -41,7 +40,7 @@ public class TagTracker {
     }
 
     public TagEntity getTagEntity(int entityID) {
-        return this.tagEntities.getOrDefault(entityID,null);
+        return this.tagEntities.getOrDefault(entityID, null);
     }
 
     public boolean isTagEntity(int entityID) {
@@ -54,7 +53,7 @@ public class TagTracker {
 
     public void destroyAll() {
         Wrappers.DestroyPacket wrapper = Wrappers.DESTROY.get();
-        this.entityTags.values().forEach(tag -> tag.destroy(wrapper));
+        this.entityTags.values().forEach(tag -> ((BaseTag) tag).destroy(wrapper));
         this.entityTags.clear();
         this.tagEntities.clear();
 
@@ -63,16 +62,14 @@ public class TagTracker {
 
     public void destroyAll(Player viewer) {
         Wrappers.DestroyPacket wrapper = Wrappers.DESTROY.get();
-        this.entityTags.values().forEach(tag -> tag.destroy(wrapper));
-        this.entityTags.clear();
-        this.tagEntities.clear();
+        this.entityTags.values().forEach(tag -> ((BaseTag) tag).destroy(wrapper));
 
         wrapper.sendPacket(viewer);
     }
 
     public void unregisterViewer(Player viewer) {
-        for(Tag tag : this.entityTags.values())
-            tag.unregisterViewer(viewer);
+        for (Tag tag : this.entityTags.values())
+            ((BaseTag) tag).unregisterViewer(viewer);
     }
 
 }

@@ -1,22 +1,22 @@
 package keehl.tagapi.tags;
 
+import keehl.tagapi.api.TagEntity;
+import keehl.tagapi.api.TagLine;
 import keehl.tagapi.wrappers.AbstractPacket;
 import keehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class TagLine {
+public class BaseTagLine implements TagLine {
 
-    private Tag tag;
+    private final BaseTag tag;
 
-    private final TagEntity bottomEntity;
-    private final TagEntity topEntity;
+    private final BaseTagEntity bottomEntity;
+    private final BaseTagEntity topEntity;
 
     private final Map<UUID, Boolean> visibilityMap = new HashMap<>();
 
@@ -27,36 +27,33 @@ public class TagLine {
 
     private boolean isInBody;
 
-    public TagLine(int importance) {
-        this(importance, false);
+    protected BaseTagLine(int importance, BaseTag tag) {
+        this(importance, tag, false);
     }
 
-    protected TagLine(int importance, boolean removeFish) {
+    protected BaseTagLine(int importance, BaseTag tag, boolean removeFish) {
         this.importance = importance;
+        this.tag = tag;
 
-        TagEntity tempEntity;
+        BaseTagEntity tempEntity;
         if (removeFish) {
-            tempEntity = bottomEntity = new TagEntity(this, null, EntityType.TROPICAL_FISH);
-            tempEntity = new TagEntity(this, tempEntity, EntityType.SLIME);
-            tempEntity = new TagEntity(this, tempEntity, EntityType.TROPICAL_FISH);
-            tempEntity = new TagEntity(this, tempEntity, EntityType.TURTLE);
+            tempEntity = bottomEntity = new BaseTagEntity(this, null, EntityType.TROPICAL_FISH);
+            tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SLIME);
+            tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TROPICAL_FISH);
+            tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TURTLE);
         } else {
-            bottomEntity = new TagEntity(this, null, EntityType.SILVERFISH);
-            tempEntity = new TagEntity(this, bottomEntity, EntityType.SILVERFISH);
+            bottomEntity = new BaseTagEntity(this, null, EntityType.SILVERFISH);
+            tempEntity = new BaseTagEntity(this, bottomEntity, EntityType.SILVERFISH);
         }
 
-        tempEntity = new TagEntity(this, tempEntity, EntityType.SLIME);
-        topEntity = new TagEntity(this, tempEntity, EntityType.ARMOR_STAND, true);
+        tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SLIME);
+        topEntity = new BaseTagEntity(this, tempEntity, EntityType.ARMOR_STAND, true);
 
         getName = (x) -> null;
         keepSpaceWhenNull = (x) -> true;
     }
 
-    protected void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
-    public void setInBody() {
+    protected void setInBody() {
         this.isInBody = true;
     }
 
@@ -68,12 +65,12 @@ public class TagLine {
         this.bottomEntity.stopTrackingLine();
     }
 
-    public TagLine setGetName(Function<Player, String> getName) {
+    public BaseTagLine setGetName(Function<Player, String> getName) {
         this.getName = getName;
         return this;
     }
 
-    public TagLine setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
+    public BaseTagLine setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
         this.keepSpaceWhenNull = keepSpaceWhenNull;
         return this;
     }
@@ -98,11 +95,11 @@ public class TagLine {
         return this.importance;
     }
 
-    public TagEntity getTopEntity() {
+    public BaseTagEntity getTopEntity() {
         return this.topEntity;
     }
 
-    public Tag getTag() {
+    public BaseTag getTag() {
         return this.tag;
     }
 
@@ -129,7 +126,7 @@ public class TagLine {
         return packets;
     }
 
-    public List<AbstractPacket> getMountPackets(TagLine parent) {
+    public List<AbstractPacket> getMountPackets(BaseTagLine parent) {
         List<AbstractPacket> packets = new ArrayList<>();
         this.bottomEntity.getMountPackets(packets, parent == null ? this.tag.getTarget().getEntityId() : parent.getTopEntity().getEntityID());
         Collections.reverse(packets);

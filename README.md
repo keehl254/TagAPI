@@ -46,7 +46,7 @@ There are many great uses for a resource such as this, but I wanted to compile a
 <h2>Client Side Only</h2>
 Yep! It's true! This API does not create any actual entities to work. The entirety of it uses packets to trick the client into thinking an entity exists. What are the benefits, though? Well, there are quite a few. <br><br>First off, no messes. The last thing a server owner would like is for a plugin to incorrectly shutdown, and now there are random floating tags around the world where entities once were. With the entirety of this system using packets and only existing on the clients end, you will not have to worry about this ever!
 <br><br>Second, and my personal favorite, is per-player customization. You can have the lines of the tags appear different to each individual player, or even hide specific lines from individual players.
-<!--<br><br><p align = "center"><img src="https://i.imgur.com/5vqpHK6.png" style="width:75%;max-width:750px;" --></p>
+<!--<br><br><p align = "center"><img src="https://i.imgur.com/5vqpHK6.png" style="width:75%;max-width:750px;"></p> -->
 <h2>How To Install On a Server</h2>
 Easy! There are two ways you can use this resource. This resource can either be downloaded from the SpigotMC Plugin Page as an individual plugin to be dropped into the servers plugins directory, or you can directly integrate it into your code.
 <br>If you are directly integrating this API into your own code, then the methods to enable and disable it are simple:
@@ -60,42 +60,32 @@ and onDisable:
 
       TagAPI.onDisable();
 <br>
-<h2>Creating, Giving, and Updating Tags</h2>
-Tags can be created by extending the class Tag and adding TagLine instances like so:
+<h2>Creating Tags</h2>
+Tags can be created by using the Builder or Tag.create(entity) method like so:
 <br>
 
-    public class ExampleTag extends Tag {
+    TagBuilder builder = TagBuilder.create(entity); // Create a new TagBuilder
+    builder.withLine(pl->"First Line").withLine(pl->"Second Line"); // Add a first and second line
+    builder.withLine(pl->"Third Line", pl->false); // Add another line, because why not?
+    builder.build(); // Build will return a Tag instance, which you can use with methods later in this page
 
-        public ExampleTag(Entity target) { // target will be the entity the tag is attached to
-            super(target);
+    // or
 
-            // Adds a new line to the tag.
-            this.addTagLine(new TagLine(10).setGetName(player ->
-                ChatColor.GREEN + "" + ChatColor.BOLD + target.getName()
-            ));
-
-            this.addTagLine(new TagLine(9).setGetName(player ->
-                ChatColor.GOLD + "" + ChatColor.BOLD + "Second Line Test"
-            ));
-
-            this.addTagLine(new TagLine(8).setGetName(player ->
-                ChatColor.GREEN + "" + ChatColor.BOLD + "Third Line Test"
-            ).setKeepSpaceWhenNull(player -> false));
-
-        }
-
-    } 
+    Tag tag = Tag.create(entity); // Create a new Tag
+    tag.addTagLine(10).setGetName(pl->"First Line");
+    tag.addTagLine(9).setGetName(pl->"Second Line");
+    tag.addTagLine(8).setGetName(pl->"Third Line").setKeepSpaceWhenNull(pl -> false);
+    
 <br>
-Each tag line represents a new line above the players head. The constructor for it takes an integer representing the priority towards the top.
+For each TagLine, you are able to customize two settings: What the line should return and whether the line should be visible if the line is null. In the TagBuilder, the line text is the first argument in the withLine method whereas the keepSpaceWhenNull setting an optional second argument.
+<br>
+In the second example, the addTagLine method returns a TagLine object, which you can directly call .setGameName and .setKeepSpaceWhenNull to alter the aforementioned settings.
 <br><br>
-In the example above, the first TagLine has a priority of 10, which is greater than the others, so it will show up on top of the others; whereas the last created tag line will be on the bottom.
-<br><br>
-Following the creation, you can see a method called setGetName. This is a Function that takes a Player, while returning a String. The Player is going to be the individual viewing the target, while the returned String should be what the line will display. 
-Similarly, the last TagLine declaration includes a new method called "setKeepSpaceWhenNull." This simply controls whether or not the line should even render for the player if the String returned by the setGetName function is null. This is true by default.
-<br><br>
+Using the traditional Tag.create method, you can see that the addTagLine method accepts an integer. This is the priority towards the top. The TagBuilder does not have this, as the order of the lines will be the order you add them to the builder.
+<h2>Getting, Updating, and Removing Tags</h2>
 From here, everything can be controlled through the Tag or TagAPI class like so:
 
-    Tag tag = new ExampleTag(entity); // Create a tag for the entity
+    Tag tag = Tag.create(entity); // Create a tag for the entity
     tag.giveTag(); // Give the entity the tag.
 
     tag = TagAPI.getTag(entity); // Grab the tag of an entity. Entity must have been given the tag using above method.
@@ -109,15 +99,14 @@ The same can be accomplished through the TagAPI class.
     TagAPI.updateTag(entity); // Update the entities tag
     TagAPI.removeTag(entity); // Remove a tag from an entity
 
-This API also has a "builder" to make tag creation easier. An example would be like:
-
-    TagBuilder.create(entity).withLine(pl->"First Line").withLine(pl->"Second Line").withLine(pl->"Third",pl->true).build().giveTag();
-
-Where TagBuilder#withLine will accept a function accepting a player and returning a string and optionally support a second argument for keeping lines when null.
-<br><br>
+<h2>Setting Default Tags</h2>
 I lastly wanted to share that it is possible to set default tags for entity types using the method in the following example:
 
-    TagAPI.setDefaultTag(EntityType.PIG, ExampleTag::new);
+    TagAPI.setDefaultTag(EntityType.PIG, target ->
+        TagBuilder.create(target).withLine(pl -> target.getName()).withLine(pl -> ChatColor.YELLOW + "HELLO " + pl.getName() + "!").build()
+    );
+
+<p align="center"><img src="https://i.imgur.com/Rz4cUBC.png" style="width:50%;max-width:300px"></p>
 
 All viewed entities will be checked only once if they should have a tag. This means that you can easily remove a tag from an entity, and it will not respawn itself.
 <h2>Dependencies</h2>

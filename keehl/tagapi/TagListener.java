@@ -6,28 +6,19 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import keehl.tagapi.instances.TestTag;
-import keehl.tagapi.tags.Tag;
-import keehl.tagapi.tags.TagLine;
+import keehl.tagapi.api.TagLine;
+import keehl.tagapi.tags.BaseTag;
 import keehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.LazyMetadataValue;
 
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
@@ -55,7 +46,7 @@ public class TagListener implements Listener {
                     if (TagAPI.getTagTracker().isTagEntity(entityID))
                         return;
 
-                    Tag tag = TagAPI.getTagTracker().getEntityTag(entityID);
+                    BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
                     if (tag == null) {
                         Entity entity = ProtocolLibrary.getProtocolManager().getEntityFromID(event.getPlayer().getWorld(), entityID);
                         if (entity == null || !TagAPI.entityDefaultTags.containsKey(entity.getType()) || (entity.hasMetadata("had-default-tag")))
@@ -73,7 +64,7 @@ public class TagListener implements Listener {
                 } else if (packetType.equals(ENTITY_DESTROY)) {
                     Wrappers.DestroyPacket wrapper = Wrappers.DESTROY_W_CONTAINER.apply(event.getPacket());
                     for (int entityID : wrapper.getEntityIDs()) {
-                        Tag tag = TagAPI.getTagTracker().getEntityTag(entityID);
+                        BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
                         if (tag == null)
                             continue;
                         tag.destroyTagFor(event.getPlayer());
@@ -142,7 +133,7 @@ public class TagListener implements Listener {
     private void onDespawn(Entity e) {
         if (TagAPI.getTagTracker().getEntityTag(e.getEntityId()) == null)
             return;
-        TagAPI.getTagTracker().getEntityTag(e.getEntityId()).destroy(true);
+        ((BaseTag) TagAPI.getTagTracker().getEntityTag(e.getEntityId())).destroy(true);
     }
 
 }
