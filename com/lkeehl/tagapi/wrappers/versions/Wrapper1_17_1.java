@@ -1,8 +1,8 @@
-package keehl.tagapi.wrappers.versions;
+package com.lkeehl.tagapi.wrappers.versions;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import keehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.wrappers.Wrappers;
 import net.minecraft.core.IRegistry;
 import net.minecraft.resources.MinecraftKey;
 import org.bukkit.Location;

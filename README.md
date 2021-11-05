@@ -22,7 +22,7 @@ There have been a couple of methods I had seen to accomplish this:
 This method, as well as the following one, are the go-to methods for creating multiple tags above an entity. You can have an unlimited number of them and, for the most part, will not have to worry about support from other plugins. Compared to the mount technique, you will not have to worry about setting passengers of the entity; however, this method does have it's own drawback: Trailing. The tags will appear to follow the player rather than be attached to them. This can seemingly be fixed for players specifically by listening to the move packets rather, but other entities will trail.
 <br>
 <h2>Mount</h2>
-Finally, we reach the technique that I use in this resource. The Mount method attaches the tags to the entity by having them ride the entity. Minecrafts own client will handle all the movement, so there will be no trailing like with the teleportation method. On top of this benefit, there are a significant less amount of packets sent to the nearby players. While the teleport has to send teleport packets for every entity to every nearby player every time the target moves, the mount method only requires 4 packets:
+Finally, we reach the technique that I use in this resource. The Mount method attaches the tags to the entity by having them ride the entity. Minecraft's own client will handle all the movement, so there will be no trailing like with the teleportation method. On top of this benefit, there are a significant less amount of packets sent to the nearby players. While the teleport has to send teleport packets for every entity to every nearby player every time the target moves, the mount method only requires 4 packets:
 <br><br>
 <ul>
   <li>Spawn Entity - Tell the client to spawn the entity</li>
@@ -48,7 +48,14 @@ Yep! It's true! This API does not create any actual entities to work. The entire
 <br><br>Second, and my personal favorite, is per-player customization. You can have the lines of the tags appear different to each individual player, or even hide specific lines from individual players.
 <!--<br><br><p align = "center"><img src="https://i.imgur.com/5vqpHK6.png" style="width:75%;max-width:750px;"></p> -->
 <h2>How To Install On a Server</h2>
-Easy! There are two ways you can use this resource. This resource can either be downloaded from the SpigotMC Plugin Page as an individual plugin to be dropped into the servers plugins directory, or you can directly integrate it into your code.
+Easy! There are two ways you can use this resource. This resource can either be downloaded from the SpigotMC Plugin Page as an individual plugin to be dropped into the servers plugins directory, or you can directly integrate it into your code using maven or github download.
+
+    <dependency>
+        <groupId>com.lkeehl</groupId>
+        <artifactId>tagapi</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+
 <br>If you are directly integrating this API into your own code, then the methods to enable and disable it are simple:
 In your plugins onEnable, include a line such as
 <br>
@@ -103,12 +110,12 @@ The same can be accomplished through the TagAPI class.
 I lastly wanted to share that it is possible to set default tags for entity types using the method in the following example:
 
     TagAPI.setDefaultTag(EntityType.PIG, target ->
-        TagBuilder.create(target).withLine(pl -> target.getName()).withLine(pl -> ChatColor.YELLOW + "HELLO " + pl.getName() + "!").build()
+        TagBuilder.create(target).withLine(pl -> target.getName()).withLine(pl -> ChatColor.YELLOW + "Hello " + pl.getName() + "!").build()
     );
 
 <p align="center"><img src="https://i.imgur.com/Rz4cUBC.png" style="width:50%;max-width:300px"></p>
 
 All viewed entities will be checked only once if they should have a tag. This means that you can easily remove a tag from an entity, and it will not respawn itself.
 <h2>Dependencies</h2>
-TagAPI requires ProtocolLib to run, and will only run in version 1.17.1 or higher as of current.
+TagAPI requires ProtocolLib to run, and will only run in version 1.17.1 or higher as of the current release.
 

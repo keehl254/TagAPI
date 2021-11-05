@@ -1,10 +1,10 @@
-package keehl.tagapi;
+package com.lkeehl.tagapi;
 
-import keehl.tagapi.api.Tag;
-import keehl.tagapi.api.TagEntity;
-import keehl.tagapi.tags.BaseTag;
-import keehl.tagapi.tags.BaseTagEntity;
-import keehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.api.Tag;
+import com.lkeehl.tagapi.api.TagEntity;
+import com.lkeehl.tagapi.tags.BaseTag;
+import com.lkeehl.tagapi.tags.BaseTagEntity;
+import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

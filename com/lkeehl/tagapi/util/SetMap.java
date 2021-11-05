@@ -1,4 +1,4 @@
-package keehl.tagapi.util;
+package com.lkeehl.tagapi.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

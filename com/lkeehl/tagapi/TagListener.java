@@ -1,4 +1,4 @@
-package keehl.tagapi;
+package com.lkeehl.tagapi;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,9 +6,9 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import keehl.tagapi.api.TagLine;
-import keehl.tagapi.tags.BaseTag;
-import keehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.api.TagLine;
+import com.lkeehl.tagapi.tags.BaseTag;
+import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

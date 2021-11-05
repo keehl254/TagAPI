@@ -1,4 +1,4 @@
-package keehl.tagapi.util;
+package com.lkeehl.tagapi.util;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import org.bukkit.Location;

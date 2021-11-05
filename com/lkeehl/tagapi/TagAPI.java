@@ -1,12 +1,12 @@
-package keehl.tagapi;
+package com.lkeehl.tagapi;
 
-import keehl.tagapi.api.Tag;
-import keehl.tagapi.tags.BaseTag;
-import keehl.tagapi.tags.BaseTagEntity;
-import keehl.tagapi.util.VersionFile;
-import keehl.tagapi.wrappers.versions.Wrapper1_17_1;
-import net.minecraft.server.MinecraftServer;
+import com.lkeehl.tagapi.api.Tag;
+import com.lkeehl.tagapi.tags.BaseTagEntity;
+import com.lkeehl.tagapi.util.VersionFile;
+import com.lkeehl.tagapi.tags.BaseTag;
+import com.lkeehl.tagapi.wrappers.versions.Wrapper1_17_1;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -53,10 +53,9 @@ public class TagAPI {
     /**
      * Disables the listener and destroys all active tags
      */
-    @SuppressWarnings("deprecation")
     public static void onDisable() {
         listener.onDisable();
-        if (!MinecraftServer.getServer().isStopped())
+        if (!((CraftServer) Bukkit.getServer()).getHandle().getServer().isStopped())
             tagTracker.destroyAll();
     }
 
@@ -101,10 +100,11 @@ public class TagAPI {
 
     /**
      * Adds or replaces the tag for the tags target
-     * @param entity    The entity that the tag should be applied to
-     * @param tagConstructor    The constructor for a tag to be added to an entity
+     *
+     * @param entity         The entity that the tag should be applied to
+     * @param tagConstructor The constructor for a tag to be added to an entity
      */
-    public static void giveTag(Entity entity, Function<Entity, BaseTag> tagConstructor) {
+    public static void giveTag(Entity entity, Function<Entity, Tag> tagConstructor) {
         tagConstructor.apply(entity).giveTag();
     }
 
@@ -115,7 +115,7 @@ public class TagAPI {
      */
     public static void removeTag(Entity entity) {
         Tag tag = tagTracker.getEntityTag(entity.getEntityId());
-        if(tag != null)
+        if (tag != null)
             tag.removeTag();
     }
 
@@ -154,7 +154,7 @@ public class TagAPI {
      * player. If the entity has already had a tag, it will not re-add
      * the tag.
      *
-     * @param type The entity type the tag will be applied to
+     * @param type           The entity type the tag will be applied to
      * @param tagConstructor A function that will create a tag for a provided entity.
      */
     public static void setDefaultTag(EntityType type, Function<Entity, Tag> tagConstructor) {

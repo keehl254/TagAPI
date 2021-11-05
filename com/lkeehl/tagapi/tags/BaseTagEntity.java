@@ -1,15 +1,15 @@
-package keehl.tagapi.tags;
+package com.lkeehl.tagapi.tags;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import keehl.tagapi.TagAPI;
-import keehl.tagapi.api.TagEntity;
-import keehl.tagapi.util.TagUtil;
-import keehl.tagapi.util.VersionFile;
-import keehl.tagapi.util.WatcherType;
-import keehl.tagapi.util.SetMap;
-import keehl.tagapi.wrappers.AbstractPacket;
-import keehl.tagapi.wrappers.AbstractSpawnPacket;
-import keehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.api.TagEntity;
+import com.lkeehl.tagapi.util.SetMap;
+import com.lkeehl.tagapi.util.WatcherType;
+import com.lkeehl.tagapi.wrappers.AbstractPacket;
+import com.lkeehl.tagapi.wrappers.AbstractSpawnPacket;
+import com.lkeehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.TagAPI;
+import com.lkeehl.tagapi.util.TagUtil;
+import com.lkeehl.tagapi.util.VersionFile;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.network.chat.IChatBaseComponent;

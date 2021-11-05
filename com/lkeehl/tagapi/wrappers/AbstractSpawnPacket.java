@@ -1,4 +1,4 @@
-package keehl.tagapi.wrappers;
+package com.lkeehl.tagapi.wrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;

@@ -1,9 +1,9 @@
-package keehl.tagapi.tags;
+package com.lkeehl.tagapi.tags;
 
-import keehl.tagapi.api.TagEntity;
-import keehl.tagapi.api.TagLine;
-import keehl.tagapi.wrappers.AbstractPacket;
-import keehl.tagapi.wrappers.Wrappers;
+import com.lkeehl.tagapi.api.TagEntity;
+import com.lkeehl.tagapi.api.TagLine;
+import com.lkeehl.tagapi.wrappers.AbstractPacket;
+import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;

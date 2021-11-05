@@ -1,6 +1,6 @@
-package keehl.tagapi.util;
+package com.lkeehl.tagapi.util;
 
-import keehl.tagapi.TagAPI;
+import com.lkeehl.tagapi.TagAPI;
 import net.minecraft.nbt.NBTCompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -22,43 +22,18 @@ public class VersionFile {
 
     private NBTTagCompound versionTag;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public VersionFile(JavaPlugin plugin) {
-        File directory = plugin.getDataFolder();
-        if (!directory.exists())
-            directory.mkdirs();
-        File file = new File(directory, "versions.cult");
-        if (!file.exists()) {
-            InputStream stream = getClass().getResourceAsStream("versions.cult");
-            try {
-                if (stream != null)
-                    Files.copy(stream, file.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        InputStream stream = getClass().getResourceAsStream("versions.cult");
+        assert stream != null;
 
         NBTTagCompound mainTag = null;
-        if (!file.exists()) {
-            mainTag = new NBTTagCompound();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                try {
-                    mainTag = NBTCompressedStreamTools.a(new GZIPInputStream(new FileInputStream(file)));
-                } catch (Exception compressException) {
-                    mainTag = NBTCompressedStreamTools.a(new FileInputStream(file));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (mainTag == null)
-                mainTag = new NBTTagCompound();
+        try {
+            mainTag = NBTCompressedStreamTools.a(stream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        if (mainTag == null)
+            mainTag = new NBTTagCompound();
 
         Function<String, Short> parse = (version) -> {
             String[] split = version.split("\\.");
