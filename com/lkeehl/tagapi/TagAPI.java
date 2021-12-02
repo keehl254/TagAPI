@@ -5,6 +5,7 @@ import com.lkeehl.tagapi.tags.BaseTagEntity;
 import com.lkeehl.tagapi.util.VersionFile;
 import com.lkeehl.tagapi.tags.BaseTag;
 import com.lkeehl.tagapi.wrappers.versions.Wrapper1_17_1;
+import com.lkeehl.tagapi.wrappers.versions.Wrapper1_18_1;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
 import org.bukkit.entity.Entity;
@@ -33,15 +34,15 @@ public class TagAPI {
     public static void onEnable(JavaPlugin javaPlugin) {
         TagAPI.plugin = javaPlugin;
 
-        VersionFile versionFile = new VersionFile(javaPlugin);
+        VersionFile versionFile = new VersionFile();
         BaseTagEntity.init(versionFile);
 
         String name = Bukkit.getServer().getClass().getPackage().getName();
         String version = name.substring(name.lastIndexOf('.') + 1);
 
-        //noinspection SwitchStatementWithTooFewBranches
         switch (version) {
-            case "v1_17_R1" -> Wrapper1_17_1.init();
+            case "v1_17_R1" -> Wrapper1_17_1.init(versionFile);
+            case "v1_18_R1" -> Wrapper1_18_1.init(versionFile);
             default -> {
             }
         }

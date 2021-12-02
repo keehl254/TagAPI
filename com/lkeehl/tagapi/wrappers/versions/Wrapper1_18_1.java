@@ -2,7 +2,6 @@ package com.lkeehl.tagapi.wrappers.versions;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import com.lkeehl.tagapi.TagAPI;
 import com.lkeehl.tagapi.util.VersionFile;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import net.minecraft.core.IRegistry;
@@ -13,12 +12,12 @@ import org.bukkit.entity.EntityType;
 import java.util.List;
 import java.util.UUID;
 
-public class Wrapper1_17_1 {
+public class Wrapper1_18_1 {
 
     private static VersionFile versionFile;
 
     public static void init(VersionFile versionFile) {
-        Wrapper1_17_1.versionFile = versionFile;
+        Wrapper1_18_1.versionFile = versionFile;
 
         Wrappers.DESTROY_W_CONTAINER = DestroyWrapper::new;
         Wrappers.DESTROY = DestroyWrapper::new;
