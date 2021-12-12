@@ -8,6 +8,7 @@ import com.lkeehl.tagapi.wrappers.versions.Wrapper1_17_1;
 import com.lkeehl.tagapi.wrappers.versions.Wrapper1_18_1;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.scheduler.CraftScheduler;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -40,12 +41,10 @@ public class TagAPI {
         String name = Bukkit.getServer().getClass().getPackage().getName();
         String version = name.substring(name.lastIndexOf('.') + 1);
 
-        switch (version) {
-            case "v1_17_R1" -> Wrapper1_17_1.init(versionFile);
-            case "v1_18_R1" -> Wrapper1_18_1.init(versionFile);
-            default -> {
-            }
-        }
+        if ("v1_17_R1".equals(version))
+            Wrapper1_17_1.init(versionFile);
+        else // On Update, replace with switch and default.
+            Wrapper1_18_1.init(versionFile);
 
         tagTracker = new TagTracker();
         Bukkit.getPluginManager().registerEvents(listener = new TagListener(), javaPlugin);
@@ -56,7 +55,7 @@ public class TagAPI {
      */
     public static void onDisable() {
         listener.onDisable();
-        if (!((CraftServer) Bukkit.getServer()).getHandle().getServer().isStopped())
+        if (plugin.isEnabled())
             tagTracker.destroyAll();
     }
 
