@@ -12,6 +12,7 @@ import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -133,7 +134,7 @@ public class TagListener implements Listener {
     private void onDespawn(Entity e) {
         if (TagAPI.getTagTracker().getEntityTag(e.getEntityId()) == null)
             return;
-        ((BaseTag) TagAPI.getTagTracker().getEntityTag(e.getEntityId())).destroy(true);
+        ((BaseTag) TagAPI.getTagTracker().getEntityTag(e.getEntityId())).destroy(!(e instanceof Player));
     }
 
 }
