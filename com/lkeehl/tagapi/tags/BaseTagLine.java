@@ -112,16 +112,16 @@ public class BaseTagLine implements TagLine {
         return this.isInBody;
     }
 
-    public List<AbstractPacket> getSpawnPackets(Player viewer, Location location, boolean spawnNew) {
+    public List<AbstractPacket> getSpawnPackets(Player viewer, Location location, boolean spawnNew, boolean showName, boolean transparentName) {
         List<AbstractPacket> packets = new ArrayList<>();
-        this.bottomEntity.getSpawnPackets(viewer, packets, location, spawnNew);
+        this.bottomEntity.getSpawnPackets(viewer, packets, location, spawnNew, showName, transparentName);
         Collections.reverse(packets);
         return packets;
     }
 
-    public List<AbstractPacket> getMetaPackets(Player viewer) {
+    public List<AbstractPacket> getMetaPackets(Player viewer, boolean showName, boolean transparentName) {
         List<AbstractPacket> packets = new ArrayList<>();
-        this.bottomEntity.getMetaPackets(viewer, packets);
+        this.bottomEntity.getMetaPackets(viewer, packets, showName, transparentName);
         Collections.reverse(packets);
         return packets;
     }

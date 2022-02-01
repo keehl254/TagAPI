@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.lkeehl.tagapi.api.TagLine;
 import com.lkeehl.tagapi.tags.BaseTag;
 import com.lkeehl.tagapi.wrappers.Wrappers;
@@ -20,6 +21,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
@@ -38,7 +42,7 @@ public class TagListener implements Listener {
          would be equally frustrating having tags not reappear if a player leaves view distance and
          comes back.
          */
-        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN) {
+        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketType packetType = event.getPacketType();
@@ -62,6 +66,23 @@ public class TagListener implements Listener {
                         tag.unregisterViewer(event.getPlayer());
 
                     tag.spawnTagFor(event.getPlayer());
+                } else if (packetType.equals(ENTITY_METADATA)) {
+                    Wrappers.MetaDataPacket wrapper = Wrappers.METADATA_W_CONTAINER.apply(event.getPacket());
+                    int entityID = event.getPacket().getIntegers().read(0);
+                    if (TagAPI.getTagTracker().isTagEntity(entityID))
+                        return;
+                    BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
+                    if (tag == null)
+                        return;
+                    Optional<WrappedWatchableObject> baseEntityData = wrapper.getMetadata().stream().filter(i -> i.getIndex() == 0).findFirst();
+                    if (baseEntityData.isEmpty())
+                        return;
+                    byte value = (byte) baseEntityData.get().getValue();
+                    if ((value & 34) == 0) {
+                        tag.updateTagFor(event.getPlayer(), true, false);
+                        return;
+                    }
+                    tag.updateTagFor(event.getPlayer(), (value & 32) == 0, (value & 2) != 0);
                 } else if (packetType.equals(ENTITY_DESTROY)) {
                     Wrappers.DestroyPacket wrapper = Wrappers.DESTROY_W_CONTAINER.apply(event.getPacket());
                     for (int entityID : wrapper.getEntityIDs()) {
@@ -75,7 +96,7 @@ public class TagListener implements Listener {
 
         };
         /*
-            This receive adapter is to get rid of a single annoyance: Interaction with the fake entities.
+            This receiving adapter is to get rid of a single annoyance: Interaction with the fake entities.
             Without intercepting this packet, any player trying to interact with an entity with a tag would
             be clicking the tag instead. This adapter simply changes the interacted-with entity to the entity
             with the tag rather than the tag itself. If the fake tag-entity is not within the entities body,
@@ -129,6 +150,7 @@ public class TagListener implements Listener {
     @EventHandler()
     public void onLeave(PlayerQuitEvent e) {
         TagAPI.getTagTracker().unregisterViewer(e.getPlayer());
+        e.getPlayer().removeMetadata("had-default-tag", TagAPI.getPlugin());
     }
 
     private void onDespawn(Entity e) {

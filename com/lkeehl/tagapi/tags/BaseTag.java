@@ -9,6 +9,8 @@ import com.lkeehl.tagapi.util.TagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -51,7 +53,19 @@ public class BaseTag extends Tag {
         return this.tagLines;
     }
 
+    private boolean isTargetInvisible() {
+        return this.target instanceof LivingEntity e && e.isInvisible();
+    }
+
+    private boolean isTargetSneaking() {
+        return this.target instanceof Player e && e.isSneaking();
+    }
+
     public void spawnTagFor(Player viewer) {
+        this.spawnTagFor(viewer, !this.isTargetInvisible(), this.isTargetSneaking());
+    }
+
+    public void spawnTagFor(Player viewer, boolean showName, boolean transparentName) {
         if (viewer == this.target)
             return;
 
@@ -69,7 +83,7 @@ public class BaseTag extends Tag {
                 continue;
             }
             Location location = this.target.getLocation().clone();
-            spawnPackets.addAll(line.getSpawnPackets(viewer, location, ((currentVision >> i) & 1) == 0));
+            spawnPackets.addAll(line.getSpawnPackets(viewer, location, ((currentVision >> i) & 1) == 0, showName, transparentName));
             mountPackets.addAll(line.getMountPackets(lastLine));
             lastLine = line;
             vision = vision | (1 << i);
@@ -97,6 +111,10 @@ public class BaseTag extends Tag {
     }
 
     public void updateTagFor(Player viewer) {
+        this.updateTagFor(viewer, !this.isTargetInvisible(), this.isTargetSneaking());
+    }
+
+    public void updateTagFor(Player viewer, boolean showName, boolean transparentName) {
         if (viewer == this.target)
             return;
         int tempVision = 0;
@@ -113,7 +131,7 @@ public class BaseTag extends Tag {
             for (TagLine line : tagLines) {
                 if (line.shouldHideFrom(viewer))
                     continue;
-                metaPackets.addAll(((BaseTagLine) line).getMetaPackets(viewer));
+                metaPackets.addAll(((BaseTagLine) line).getMetaPackets(viewer, showName, transparentName));
             }
 
             metaPackets.forEach(p -> p.sendPacket(viewer));

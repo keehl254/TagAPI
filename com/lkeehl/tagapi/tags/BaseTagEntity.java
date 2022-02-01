@@ -133,14 +133,16 @@ public class BaseTagEntity implements TagEntity {
         return wrapper;
     }
 
-    protected AbstractPacket getMetaPacket(Player viewer) {
+    protected AbstractPacket getMetaPacket(Player viewer, boolean showName, boolean transparentName) {
         Wrappers.MetaDataPacket wrapper = Wrappers.METADATA.get();
         wrapper.setEntityID(this.getEntityID());
 
         WrappedDataWatcher watcher = new WrappedDataWatcher();
         entityWatchers.get(this.entityType).forEach(entry -> entry.apply(watcher));
         String name;
-        if (this.nameEntity && (name = this.tagLine.getNameFor(viewer)) != null) {
+        if (transparentName)
+            TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.INVISIBLE), Byte.class, (byte) 34);
+        if (this.nameEntity && (name = this.tagLine.getNameFor(viewer)) != null && showName) {
             TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.NAME_VISIBLE), Boolean.class, true); // Name Visible
             TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.CUSTOM_NAME), WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.ofNullable(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(TextComponent.fromLegacyText(name)))));
         }
@@ -149,10 +151,10 @@ public class BaseTagEntity implements TagEntity {
         return wrapper;
     }
 
-    public void getSpawnPackets(Player viewer, List<AbstractPacket> packets, Location location, boolean spawnNew) {
+    public void getSpawnPackets(Player viewer, List<AbstractPacket> packets, Location location, boolean spawnNew, boolean showName, boolean transparentName) {
         if (this.child != null)
-            this.child.getSpawnPackets(viewer, packets, location, spawnNew);
-        packets.add(this.getMetaPacket(viewer));
+            this.child.getSpawnPackets(viewer, packets, location, spawnNew, showName, transparentName);
+        packets.add(this.getMetaPacket(viewer, showName, transparentName));
         if (spawnNew)
             packets.add(this.getSpawnPacket(location));
     }
@@ -164,11 +166,11 @@ public class BaseTagEntity implements TagEntity {
         packets.add(this.getMountPacket(defaultParentID));
     }
 
-    public void getMetaPackets(Player viewer, List<AbstractPacket> packets) {
+    public void getMetaPackets(Player viewer, List<AbstractPacket> packets, boolean showName, boolean transparentName) {
         if (this.child != null)
-            this.child.getMetaPackets(viewer, packets);
+            this.child.getMetaPackets(viewer, packets, showName, transparentName);
 
-        packets.add(this.getMetaPacket(viewer));
+        packets.add(this.getMetaPacket(viewer, showName, transparentName));
     }
 
     public AbstractPacket getMountPacket(int defaultParentID) {
