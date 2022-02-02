@@ -42,8 +42,8 @@ public class BaseTagLine implements TagLine {
             tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TROPICAL_FISH);
             tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TURTLE);
         } else {
-            bottomEntity = new BaseTagEntity(this, null, EntityType.SILVERFISH);
-            tempEntity = new BaseTagEntity(this, bottomEntity, EntityType.SILVERFISH);
+            tempEntity = bottomEntity = new BaseTagEntity(this, null, EntityType.SILVERFISH);
+            tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SILVERFISH);
         }
 
         tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SLIME);
@@ -95,12 +95,16 @@ public class BaseTagLine implements TagLine {
         return this.importance;
     }
 
+    public BaseTag getTag() {
+        return this.tag;
+    }
+
     public BaseTagEntity getTopEntity() {
         return this.topEntity;
     }
 
-    public BaseTag getTag() {
-        return this.tag;
+    public BaseTagEntity getBottomEntity() {
+        return this.bottomEntity;
     }
 
     public boolean shouldHideFrom(Player viewer) {

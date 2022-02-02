@@ -1,10 +1,6 @@
 package com.lkeehl.tagapi.manager;
 
 import com.lkeehl.tagapi.TagAPI;
-import com.lkeehl.tagapi.TagBuilder;
-import com.lkeehl.tagapi.api.Tag;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TagManager extends JavaPlugin {

@@ -1,11 +1,14 @@
 package com.lkeehl.tagapi.tags;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.lkeehl.tagapi.api.TagEntity;
 import com.lkeehl.tagapi.util.SetMap;
 import com.lkeehl.tagapi.util.WatcherType;
 import com.lkeehl.tagapi.wrappers.AbstractPacket;
 import com.lkeehl.tagapi.wrappers.AbstractSpawnPacket;
+import com.lkeehl.tagapi.wrappers.DevPacket;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import com.lkeehl.tagapi.TagAPI;
 import com.lkeehl.tagapi.util.TagUtil;
@@ -13,6 +16,7 @@ import com.lkeehl.tagapi.util.VersionFile;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -22,6 +26,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BaseTagEntity implements TagEntity {
 
@@ -35,6 +41,8 @@ public class BaseTagEntity implements TagEntity {
     private final EntityType entityType;
 
     private final boolean nameEntity;
+
+    private final List<Function<TagEntity, PacketContainer>> injectedPackets = new ArrayList<>();
 
     private static final SetMap<EntityType, DataEntry> entityWatchers = new SetMap<>();
 
@@ -155,6 +163,7 @@ public class BaseTagEntity implements TagEntity {
         if (this.child != null)
             this.child.getSpawnPackets(viewer, packets, location, spawnNew, showName, transparentName);
         packets.add(this.getMetaPacket(viewer, showName, transparentName));
+        packets.addAll(this.injectedPackets.stream().map(i -> new DevPacket(i.apply(this))).collect(Collectors.toList()));
         if (spawnNew)
             packets.add(this.getSpawnPacket(location));
     }
@@ -171,6 +180,7 @@ public class BaseTagEntity implements TagEntity {
             this.child.getMetaPackets(viewer, packets, showName, transparentName);
 
         packets.add(this.getMetaPacket(viewer, showName, transparentName));
+        packets.addAll(this.injectedPackets.stream().map(i -> new DevPacket(i.apply(this))).collect(Collectors.toList()));
     }
 
     public AbstractPacket getMountPacket(int defaultParentID) {
@@ -199,6 +209,10 @@ public class BaseTagEntity implements TagEntity {
             this.child.destroy(wrapper);
 
         wrapper.addEntityID(this.entityID);
+    }
+
+    public void injectPacket(Function<TagEntity,PacketContainer> packetContainer) {
+        this.injectedPackets.add(packetContainer);
     }
 
     private static class DataEntry {

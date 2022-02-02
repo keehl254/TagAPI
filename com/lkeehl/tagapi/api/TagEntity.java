@@ -1,6 +1,11 @@
 package com.lkeehl.tagapi.api;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface TagEntity {
 
@@ -31,6 +36,11 @@ public interface TagEntity {
      * @return The TagEntity that this is connected to, or null if none is present.
      */
     TagEntity getChild();
+
+    /**
+     * Adds an extra packet that will be sent with the meta and spawn packets when this tag is created.
+     */
+    void injectPacket(Function<TagEntity, PacketContainer> packetContainer);
 
 
 }

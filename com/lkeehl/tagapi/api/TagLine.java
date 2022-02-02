@@ -24,7 +24,7 @@ public interface TagLine {
     /**
      * Allows you to control the visibility of specific tag lines for individual players.
      *
-     * @param viewer The player whose visibility is being altered.
+     * @param viewer  The player whose visibility is being altered.
      * @param visible Whether the line should be visible for the provided player.
      */
     void setVisibilityFor(Player viewer, boolean visible);
@@ -42,6 +42,20 @@ public interface TagLine {
      * @return The Tag this TagLine belongs to.
      */
     Tag getTag();
+
+    /**
+     * Returns the TagEntity that is the bottom of this TagLine.
+     *
+     * @return The TagEntity on the bottom of this TagLine.
+     */
+    TagEntity getBottomEntity();
+
+    /**
+     * Returns the TagEntity that is the top of this TagLine. This is always the armor stand.
+     *
+     * @return The TagEntity at the top of this TagLine. This is will represent an Armor Stand.
+     */
+    TagEntity getTopEntity();
 
     /**
      * Returns whether this tag should not be visible to a provided player

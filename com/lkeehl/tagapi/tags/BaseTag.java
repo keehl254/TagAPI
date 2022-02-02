@@ -52,6 +52,14 @@ public class BaseTag extends Tag {
         return this.tagLines;
     }
 
+    public TagLine getBottomTagLine() {
+        return this.tagLines.get(0);
+    }
+
+    public TagLine getTopTagLine() {
+        return this.tagLines.get(this.tagLines.size() - 1);
+    }
+
     private boolean isTargetVisible() {
         return !(this.target instanceof LivingEntity e) || !e.isInvisible();
     }

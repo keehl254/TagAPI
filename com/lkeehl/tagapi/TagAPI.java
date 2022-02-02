@@ -158,4 +158,12 @@ public class TagAPI {
         entityDefaultTags.put(type, tagConstructor);
     }
 
+    /**
+     * Calling this method will allow the packet listener to listen for player and entity movement to ensure
+     * a tag is hidden if a player is outside an appropriate distance from the viewer.
+     */
+    public static void listenForMovement() {
+        listener.setCheckMovement(true);
+    }
+
 }

@@ -10,10 +10,15 @@ import java.util.stream.Stream;
 public class TagUtil {
 
     public static Stream<Player> getViewers(Entity entity) {
-        return entity.getWorld().getPlayers().stream().filter(p ->
-                Math.abs(p.getLocation().getX() - entity.getLocation().getX()) <= 48
-                        && Math.abs(p.getLocation().getZ() - entity.getLocation().getZ()) <= 48
-        );
+        return entity.getWorld().getPlayers().stream().filter(p -> isViewer(entity, p));
+    }
+
+    public static boolean isViewer(Entity entity, Player player) {
+        return isViewer(player, entity.getLocation().getX(), entity.getLocation().getZ());
+    }
+
+    public static boolean isViewer(Player player, double x, double z) {
+        return Math.abs(player.getLocation().getX() - x) <= 48 && Math.abs(player.getLocation().getZ() - z) <= 48;
     }
 
     public static <H> void applyData(WrappedDataWatcher watcher, int index, Class<H> clazz, H value) {

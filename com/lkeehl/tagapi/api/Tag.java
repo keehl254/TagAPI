@@ -42,6 +42,21 @@ public abstract class Tag {
     public abstract List<TagLine> getTagLines();
 
     /**
+     * Returns the bottom-most TagLine. This is often a dummy line to adjust the
+     * starting point of the developer-provided lines.
+     *
+     * @return The bottom-most TagLine.
+     */
+    public abstract TagLine getBottomTagLine();
+
+    /**
+     * Returns the top-most TagLine.
+     *
+     * @return The top-most TagLine.
+     */
+    public abstract TagLine getTopTagLine();
+
+    /**
      * Updates the view of the tag for a provided player.
      *
      * @param viewer The player which the tag should update for.

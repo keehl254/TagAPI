@@ -6,9 +6,12 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.lkeehl.tagapi.api.TagLine;
 import com.lkeehl.tagapi.tags.BaseTag;
+import com.lkeehl.tagapi.util.TagUtil;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -32,6 +35,8 @@ public class TagListener implements Listener {
     private final PacketAdapter sendAdapter;
     private final PacketAdapter receiveAdapter;
 
+    private boolean checkMovement = false;
+
     public TagListener() {
 
         /*
@@ -42,7 +47,7 @@ public class TagListener implements Listener {
          would be equally frustrating having tags not reappear if a player leaves view distance and
          comes back.
          */
-        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA) {
+        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_TELEPORT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketType packetType = event.getPacketType();
@@ -83,6 +88,23 @@ public class TagListener implements Listener {
                         return;
                     }
                     tag.updateTagFor(event.getPlayer(), (value & 32) == 0, (value & 2) != 0);
+                } else if (packetType.equals(PLAYER_INFO)) {
+                    EnumWrappers.PlayerInfoAction action = event.getPacket().getPlayerInfoAction().read(0);
+                    if (action == EnumWrappers.PlayerInfoAction.REMOVE_PLAYER || action == EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
+                        List<PlayerInfoData> dataList = event.getPacket().getPlayerInfoDataLists().read(0);
+                        for (PlayerInfoData data : dataList) {
+                            Player player = Bukkit.getPlayer(data.getProfile().getUUID());
+                            if (player == null || !player.isOnline())
+                                continue;
+                            BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(player.getEntityId());
+                            if (tag == null)
+                                continue;
+                            if (action == EnumWrappers.PlayerInfoAction.REMOVE_PLAYER)
+                                tag.destroyTagFor(event.getPlayer());
+                            else
+                                tag.updateTagFor(event.getPlayer());
+                        }
+                    }
                 } else if (packetType.equals(ENTITY_DESTROY)) {
                     Wrappers.DestroyPacket wrapper = Wrappers.DESTROY_W_CONTAINER.apply(event.getPacket());
                     for (int entityID : wrapper.getEntityIDs()) {
@@ -91,6 +113,25 @@ public class TagListener implements Listener {
                             continue;
                         tag.destroyTagFor(event.getPlayer());
                     }
+                } else if (packetType.equals(REL_ENTITY_MOVE) || packetType.equals(REL_ENTITY_MOVE_LOOK) || packetType.equals(ENTITY_TELEPORT)) {
+                    if (!TagListener.this.checkMovement)
+                        return;
+                    int entityID = event.getPacket().getIntegers().read(0);
+                    if (TagAPI.getTagTracker().isTagEntity(entityID))
+                        return;
+
+                    BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
+                    if (tag == null)
+                        return;
+
+                    if (packetType.equals(ENTITY_TELEPORT)) {
+                        if (!TagUtil.isViewer(event.getPlayer(), event.getPacket().getDoubles().read(0), event.getPacket().getDoubles().read(2)))
+                            tag.destroyTagFor(event.getPlayer());
+                        return;
+                    }
+                    if (!TagUtil.isViewer(event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0), event.getPlayer()))
+                        tag.destroyTagFor(event.getPlayer());
+
                 }
             }
 
@@ -134,6 +175,10 @@ public class TagListener implements Listener {
     public void onDisable() {
         ProtocolLibrary.getProtocolManager().removePacketListener(this.sendAdapter);
         ProtocolLibrary.getProtocolManager().removePacketListener(this.receiveAdapter);
+    }
+
+    public void setCheckMovement(boolean checkMovement) {
+        this.checkMovement = checkMovement;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
