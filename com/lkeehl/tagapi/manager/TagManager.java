@@ -12,13 +12,6 @@ public class TagManager extends JavaPlugin {
     @Override()
     public void onEnable() {
         TagAPI.onEnable(this);
-
-        TagAPI.setDefaultTag(EntityType.PLAYER, pl -> {
-            Tag tag = Tag.create(pl);
-            tag.addTagLine(9).setGetName(HumanEntity::getName);
-            tag.addTagLine(8).setGetName(i -> i.getEntityId() + "");
-            return tag;
-        });
     }
 
     @Override()

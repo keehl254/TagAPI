@@ -9,7 +9,6 @@ import com.lkeehl.tagapi.util.TagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -53,8 +52,8 @@ public class BaseTag extends Tag {
         return this.tagLines;
     }
 
-    private boolean isTargetInvisible() {
-        return this.target instanceof LivingEntity e && e.isInvisible();
+    private boolean isTargetVisible() {
+        return !(this.target instanceof LivingEntity e) || !e.isInvisible();
     }
 
     private boolean isTargetSneaking() {
@@ -62,7 +61,7 @@ public class BaseTag extends Tag {
     }
 
     public void spawnTagFor(Player viewer) {
-        this.spawnTagFor(viewer, !this.isTargetInvisible(), this.isTargetSneaking());
+        this.spawnTagFor(viewer, this.isTargetVisible(), this.isTargetSneaking());
     }
 
     public void spawnTagFor(Player viewer, boolean showName, boolean transparentName) {
@@ -111,7 +110,7 @@ public class BaseTag extends Tag {
     }
 
     public void updateTagFor(Player viewer) {
-        this.updateTagFor(viewer, !this.isTargetInvisible(), this.isTargetSneaking());
+        this.updateTagFor(viewer, this.isTargetVisible(), this.isTargetSneaking());
     }
 
     public void updateTagFor(Player viewer, boolean showName, boolean transparentName) {
