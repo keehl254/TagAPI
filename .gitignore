@@ -104,3 +104,4 @@ build/
 
 # Common working directory
 run/
+/src/main/java/com/lkeehl/tagapi/manager/
