@@ -29,7 +29,7 @@ public class VersionFile {
     private final Tag<Map<String, Tag<?>>> versionTag;
 
     public VersionFile() {
-        InputStream fileStream = getClass().getResourceAsStream("versions.cult");
+        InputStream fileStream = getClass().getResourceAsStream("/versions.cult");
         assert fileStream != null;
 
         Tag<Map<String, Tag<?>>> mainTag = null;
