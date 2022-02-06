@@ -10,6 +10,6 @@ public class DevPacket extends AbstractPacket {
      * @param handle - handle to the raw packet data.
      */
     public DevPacket(PacketContainer handle) {
-        super(handle, handle.getType());
+        super(handle);
     }
 }

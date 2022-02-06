@@ -37,7 +37,8 @@ public class BaseTagLine implements TagLine {
 
         BaseTagEntity tempEntity;
         if (removeFish) {
-            tempEntity = bottomEntity = new BaseTagEntity(this, null, EntityType.TROPICAL_FISH);
+            tempEntity = bottomEntity = new BaseTagEntity(this, null, EntityType.ARMOR_STAND,false);
+            tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TROPICAL_FISH);
             tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SLIME);
             tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TROPICAL_FISH);
             tempEntity = new BaseTagEntity(this, tempEntity, EntityType.TURTLE);
@@ -130,9 +131,9 @@ public class BaseTagLine implements TagLine {
         return packets;
     }
 
-    public List<AbstractPacket> getMountPackets(BaseTagLine parent) {
+    public List<AbstractPacket> getMountPackets(Player viewer, BaseTagLine parent) {
         List<AbstractPacket> packets = new ArrayList<>();
-        this.bottomEntity.getMountPackets(packets, parent == null ? this.tag.getTarget().getEntityId() : parent.getTopEntity().getEntityID());
+        this.bottomEntity.getMountPackets(viewer, packets, parent == null ? this.tag.getTarget().getEntityId() : parent.getTopEntity().getEntityID());
         Collections.reverse(packets);
         return packets;
     }

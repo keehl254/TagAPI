@@ -1,9 +1,7 @@
 package com.lkeehl.tagapi.wrappers;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
-import com.google.common.base.Objects;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,14 +14,11 @@ public abstract class AbstractPacket {
 	 * Constructs a new strongly typed wrapper for the given packet.
 	 * 
 	 * @param handle - handle to the raw packet data.
-	 * @param type - the packet type.
 	 */
-	protected AbstractPacket(PacketContainer handle, PacketType type) {
+	protected AbstractPacket(PacketContainer handle) {
 		// Make sure we're given a valid packet
 		if (handle == null)
 			throw new IllegalArgumentException("Packet handle cannot be NULL.");
-		if (!Objects.equal(handle.getType(), type))
-			throw new IllegalArgumentException(handle.getHandle() + " is not a packet of type " + type);
 
 		this.handle = handle;
 	}

@@ -50,7 +50,7 @@ public class Wrappers {
     public abstract static class MountPacket extends AbstractPacket {
 
         protected MountPacket() {
-            super(new PacketContainer( PacketType.Play.Server.MOUNT),  PacketType.Play.Server.MOUNT);
+            super(new PacketContainer( PacketType.Play.Server.MOUNT));
             handle.getModifier().writeDefaults();
         }
 
@@ -66,12 +66,12 @@ public class Wrappers {
     public abstract static class MetaDataPacket extends AbstractPacket {
 
         protected MetaDataPacket() {
-            super(new PacketContainer( PacketType.Play.Server.ENTITY_METADATA),  PacketType.Play.Server.ENTITY_METADATA);
+            super(new PacketContainer( PacketType.Play.Server.ENTITY_METADATA));
             handle.getModifier().writeDefaults();
         }
 
         public MetaDataPacket(PacketContainer packet) {
-            super(packet, PacketType.Play.Server.ENTITY_METADATA);
+            super(packet);
         }
 
         public abstract void setEntityID(int value);
@@ -86,12 +86,12 @@ public class Wrappers {
     public abstract static class DestroyPacket extends AbstractPacket {
 
         protected DestroyPacket() {
-            super(new PacketContainer( PacketType.Play.Server.ENTITY_DESTROY),  PacketType.Play.Server.ENTITY_DESTROY);
+            super(new PacketContainer( PacketType.Play.Server.ENTITY_DESTROY));
             handle.getModifier().writeDefaults();
         }
 
         public DestroyPacket(PacketContainer packet) {
-            super(packet, PacketType.Play.Server.ENTITY_DESTROY);
+            super(packet);
         }
 
         public abstract int getCount();

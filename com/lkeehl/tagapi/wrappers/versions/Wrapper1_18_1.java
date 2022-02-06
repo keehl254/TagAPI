@@ -4,8 +4,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.lkeehl.tagapi.util.VersionFile;
 import com.lkeehl.tagapi.wrappers.Wrappers;
-import net.minecraft.core.IRegistry;
-import net.minecraft.resources.MinecraftKey;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 

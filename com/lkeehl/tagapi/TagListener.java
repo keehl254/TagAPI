@@ -9,22 +9,28 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.lkeehl.tagapi.api.Tag;
 import com.lkeehl.tagapi.api.TagLine;
 import com.lkeehl.tagapi.tags.BaseTag;
+import com.lkeehl.tagapi.tags.BaseTagEntity;
 import com.lkeehl.tagapi.util.TagUtil;
+import com.lkeehl.tagapi.wrappers.AbstractPacket;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +53,7 @@ public class TagListener implements Listener {
          would be equally frustrating having tags not reappear if a player leaves view distance and
          comes back.
          */
-        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_TELEPORT) {
+        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_LOOK, ENTITY_TELEPORT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketType packetType = event.getPacketType();
@@ -113,7 +119,7 @@ public class TagListener implements Listener {
                             continue;
                         tag.destroyTagFor(event.getPlayer());
                     }
-                } else if (packetType.equals(REL_ENTITY_MOVE) || packetType.equals(REL_ENTITY_MOVE_LOOK) || packetType.equals(ENTITY_TELEPORT)) {
+                } else if (packetType.equals(REL_ENTITY_MOVE) || packetType.equals(REL_ENTITY_MOVE_LOOK) || packetType.equals(ENTITY_TELEPORT) || packetType.equals(ENTITY_LOOK)) {
                     if (!TagListener.this.checkMovement)
                         return;
                     int entityID = event.getPacket().getIntegers().read(0);
@@ -125,12 +131,22 @@ public class TagListener implements Listener {
                         return;
 
                     if (packetType.equals(ENTITY_TELEPORT)) {
-                        if (!TagUtil.isViewer(event.getPlayer(), event.getPacket().getDoubles().read(0), event.getPacket().getDoubles().read(2)))
+                        if (!TagUtil.isViewer(event.getPlayer(), event.getPacket().getDoubles().read(0), event.getPacket().getDoubles().read(2))) {
                             tag.destroyTagFor(event.getPlayer());
-                        return;
+                            return;
+                        }
+                    } else if (!packetType.equals(ENTITY_LOOK)) {
+                        if (!TagUtil.isViewer(event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0), event.getPlayer())) {
+                            tag.destroyTagFor(event.getPlayer());
+                            return;
+                        }
                     }
-                    if (!TagUtil.isViewer(event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0), event.getPlayer()))
-                        tag.destroyTagFor(event.getPlayer());
+
+                    if (packetType.equals(ENTITY_LOOK) || packetType.equals(REL_ENTITY_MOVE_LOOK)) {
+                        List<AbstractPacket> packets = new ArrayList<>();
+                        ((BaseTagEntity) tag.getBottomTagLine().getBottomEntity()).getMetaPackets(event.getPlayer(), packets, !event.getPlayer().isInvisible(), event.getPlayer().isSneaking());
+                        packets.forEach(p -> p.sendPacket(event.getPlayer()));
+                    }
 
                 }
             }
@@ -159,6 +175,8 @@ public class TagListener implements Listener {
 
                     Entity entity = tagLine.getTag().getTarget();
                     if (!(entity instanceof LivingEntity))
+                        return;
+                    if (entity == event.getPlayer())
                         return;
 
                     if (event.getPlayer().hasLineOfSight(entity))
@@ -196,6 +214,18 @@ public class TagListener implements Listener {
     public void onLeave(PlayerQuitEvent e) {
         TagAPI.getTagTracker().unregisterViewer(e.getPlayer());
         e.getPlayer().removeMetadata("had-default-tag", TagAPI.getPlugin());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent e) {
+        BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(e.getPlayer().getEntityId());
+        if (tag == null) {
+            if (!TagAPI.entityDefaultTags.containsKey(EntityType.PLAYER) || (e.getPlayer().hasMetadata("had-default-tag")))
+                return;
+
+            e.getPlayer().setMetadata("had-default-tag", new FixedMetadataValue(TagAPI.getPlugin(), true));
+            TagAPI.entityDefaultTags.get(EntityType.PLAYER).apply(e.getPlayer()).giveTag();
+        }
     }
 
     private void onDespawn(Entity e) {

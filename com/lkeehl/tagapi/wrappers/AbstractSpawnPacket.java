@@ -10,12 +10,12 @@ import java.util.UUID;
 public abstract class AbstractSpawnPacket extends AbstractPacket{
 
     protected AbstractSpawnPacket(PacketType type) {
-        super(new PacketContainer(type), type);
+        super(new PacketContainer(type));
         handle.getModifier().writeDefaults();
     }
 
-    protected AbstractSpawnPacket(PacketContainer container, PacketType type) {
-        super(container, type);
+    protected AbstractSpawnPacket(PacketContainer container) {
+        super(container);
     }
 
     public abstract void setID(int entityID);

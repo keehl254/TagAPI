@@ -73,8 +73,6 @@ public class BaseTag extends Tag {
     }
 
     public void spawnTagFor(Player viewer, boolean showName, boolean transparentName) {
-        if (viewer == this.target)
-            return;
 
         List<AbstractPacket> spawnPackets = new ArrayList<>();
         List<AbstractPacket> mountPackets = new ArrayList<>();
@@ -82,7 +80,7 @@ public class BaseTag extends Tag {
         BaseTagLine lastLine = null;
         int currentVision = this.playerVisionCache.getOrDefault(viewer.getEntityId(), 0);
         int vision = 0;
-        for (int i = 0; i < this.tagLines.size(); i++) {
+        for (int i = 0; i < (viewer == this.target ? 1 : this.tagLines.size()); i++) {
             BaseTagLine line = (BaseTagLine) this.tagLines.get(i);
             if (line.shouldHideFrom(viewer)) {
                 if (((currentVision >> i) & 1) == 1)
@@ -91,7 +89,7 @@ public class BaseTag extends Tag {
             }
             Location location = this.target.getLocation().clone();
             spawnPackets.addAll(line.getSpawnPackets(viewer, location, ((currentVision >> i) & 1) == 0, showName, transparentName));
-            mountPackets.addAll(line.getMountPackets(lastLine));
+            mountPackets.addAll(line.getMountPackets(viewer, lastLine));
             lastLine = line;
             vision = vision | (1 << i);
         }
@@ -105,8 +103,6 @@ public class BaseTag extends Tag {
     }
 
     public void destroyTagFor(Player viewer) {
-        if (viewer == this.target)
-            return;
         Wrappers.DestroyPacket wrapper = Wrappers.DESTROY.get();
         this.destroy(wrapper);
         wrapper.sendPacket(viewer);
@@ -122,10 +118,8 @@ public class BaseTag extends Tag {
     }
 
     public void updateTagFor(Player viewer, boolean showName, boolean transparentName) {
-        if (viewer == this.target)
-            return;
         int tempVision = 0;
-        for (int i = 0; i < this.tagLines.size(); i++) {
+        for (int i = 0; i < (viewer == this.target ? 1 : this.tagLines.size()); i++) {
             TagLine line = this.tagLines.get(i);
             if (line.shouldHideFrom(viewer))
                 continue;
@@ -152,6 +146,8 @@ public class BaseTag extends Tag {
             oldTag.getTagLines().stream().map(i -> (BaseTagLine) i).forEach(BaseTagLine::stopTrackingEntities);
         this.getTagLines().stream().map(i -> (BaseTagLine) i).forEach(BaseTagLine::trackEntities);
         TagUtil.getViewers(this.target).forEach(this::spawnTagFor);
+        if (this.target instanceof Player)
+            this.spawnTagFor((Player) this.target);
     }
 
     public void removeTag() {
