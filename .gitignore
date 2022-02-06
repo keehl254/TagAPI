@@ -104,4 +104,3 @@ build/
 
 # Common working directory
 run/
-!/src/
