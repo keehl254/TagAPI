@@ -163,7 +163,7 @@ public class TagAPI {
      * a tag is hidden if a player is outside an appropriate distance from the viewer.
      */
     public static void listenForMovement() {
-        listener.setCheckMovement(true);
+        listener.listenForMovement();
     }
 
 }

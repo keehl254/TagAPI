@@ -9,7 +9,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import com.lkeehl.tagapi.api.Tag;
 import com.lkeehl.tagapi.api.TagLine;
 import com.lkeehl.tagapi.tags.BaseTag;
 import com.lkeehl.tagapi.tags.BaseTagEntity;
@@ -41,7 +40,9 @@ public class TagListener implements Listener {
     private final PacketAdapter sendAdapter;
     private final PacketAdapter receiveAdapter;
 
-    private boolean checkMovement = false;
+    private boolean listenForMovement = false;
+
+    private int taskID = -1;
 
     public TagListener() {
 
@@ -120,7 +121,7 @@ public class TagListener implements Listener {
                         tag.destroyTagFor(event.getPlayer());
                     }
                 } else if (packetType.equals(REL_ENTITY_MOVE) || packetType.equals(REL_ENTITY_MOVE_LOOK) || packetType.equals(ENTITY_TELEPORT) || packetType.equals(ENTITY_LOOK)) {
-                    if (!TagListener.this.checkMovement)
+                    if (!TagListener.this.listenForMovement)
                         return;
                     int entityID = event.getPacket().getIntegers().read(0);
                     if (TagAPI.getTagTracker().isTagEntity(entityID))
@@ -159,7 +160,7 @@ public class TagListener implements Listener {
             with the tag rather than the tag itself. If the fake tag-entity is not within the entities body,
             we will simply ignore it.
          */
-        this.receiveAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.LOWEST, PacketType.Play.Client.USE_ENTITY) {
+        this.receiveAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.LOWEST, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION) {
 
             @Override()
             public void onPacketReceiving(PacketEvent event) {
@@ -182,6 +183,16 @@ public class TagListener implements Listener {
                     if (event.getPlayer().hasLineOfSight(entity))
                         event.getPacket().getIntegers().write(0, entity.getEntityId());
 
+                } else if (listenForMovement) {
+                    if (!packetType.equals(PacketType.Play.Client.POSITION_LOOK) || packetType.equals(PacketType.Play.Client.LOOK) || packetType.equals(PacketType.Play.Client.POSITION))
+                        return;
+                    int entityID = event.getPlayer().getEntityId();
+                    if (TagAPI.getTagTracker().isTagEntity(entityID))
+                        return;
+                    BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
+                    if (tag == null)
+                        return;
+                    tag.updateBottomStand();
                 }
             }
         };
@@ -193,10 +204,25 @@ public class TagListener implements Listener {
     public void onDisable() {
         ProtocolLibrary.getProtocolManager().removePacketListener(this.sendAdapter);
         ProtocolLibrary.getProtocolManager().removePacketListener(this.receiveAdapter);
+
+        Bukkit.getScheduler().cancelTask(this.taskID);
     }
 
-    public void setCheckMovement(boolean checkMovement) {
-        this.checkMovement = checkMovement;
+    public void setupTask() {
+        if(this.taskID != -1)
+            Bukkit.getScheduler().cancelTask(this.taskID);
+        this.taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(TagAPI.getPlugin(), () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (!TagAPI.hasTag(player))
+                    continue;
+                ((BaseTag) TagAPI.getTag(player)).updateBottomStand(player);
+            }
+        }, 0L, 1L);
+    }
+
+    public void listenForMovement() {
+        this.listenForMovement = true;
+        this.setupTask();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

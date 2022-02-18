@@ -6,7 +6,7 @@
 
     <groupId>com.lkeehl</groupId>
     <artifactId>tagapi</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <resources>

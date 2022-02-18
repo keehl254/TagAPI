@@ -6,6 +6,7 @@ import com.lkeehl.tagapi.api.TagLine;
 import com.lkeehl.tagapi.wrappers.AbstractPacket;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import com.lkeehl.tagapi.util.TagUtil;
+import net.minecraft.network.protocol.game.PacketPlayInFlying;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -100,6 +101,19 @@ public class BaseTag extends Tag {
         Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> mountPackets.forEach(p -> p.sendPacket(viewer)), 1);
         if (destroyWrapper.getCount() > 0)
             Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> destroyWrapper.sendPacket(viewer), 2);
+    }
+
+    public void updateBottomStand(Player viewer) {
+        if (this.getBottomTagLine().shouldHideFrom(viewer))
+            return;
+        Location location = this.target.getLocation().clone();
+        List<AbstractPacket> spawnPackets = new ArrayList<>();
+        ((BaseTagEntity) this.getBottomTagLine().getBottomEntity()).getSpawnPackets(viewer, spawnPackets, location, false, this.isTargetVisible(), this.isTargetSneaking());
+        spawnPackets.forEach(p -> p.sendPacket(viewer));
+    }
+
+    public void updateBottomStand() {
+        TagUtil.getViewers(this.target).forEach(this::updateBottomStand);
     }
 
     public void destroyTagFor(Player viewer) {
