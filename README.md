@@ -102,7 +102,7 @@ From here, everything can be controlled through the Tag or TagAPI class like so:
 The above example shows creating a new tag for an entity, spawning the tag in, grabbing an entities tag, updating the tag, as well as removing one.
 The same can be accomplished through the TagAPI class.
 
-    TagAPI.giveTag(entity, ExampleTag::new); // Create and give tag to entity
+    TagAPI.giveTag(entity, tagConstructor); // Create and give tag to entity. tagConstructor is a Function that receives an entity and returns a tag.
     TagAPI.updateTag(entity); // Update the entities tag
     TagAPI.removeTag(entity); // Remove a tag from an entity
 
