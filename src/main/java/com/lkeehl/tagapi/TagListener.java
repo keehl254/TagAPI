@@ -16,6 +16,7 @@ import com.lkeehl.tagapi.util.TagUtil;
 import com.lkeehl.tagapi.wrappers.AbstractPacket;
 import com.lkeehl.tagapi.wrappers.Wrappers;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -44,6 +45,8 @@ public class TagListener implements Listener {
 
     private int taskID = -1;
 
+    private final List<Integer> initiatingEntitiesToIgnore = new ArrayList<>();
+
     public TagListener() {
 
         /*
@@ -54,7 +57,7 @@ public class TagListener implements Listener {
          would be equally frustrating having tags not reappear if a player leaves view distance and
          comes back.
          */
-        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_LOOK, ENTITY_TELEPORT) {
+        this.sendAdapter = new PacketAdapter(TagAPI.getPlugin(), ListenerPriority.MONITOR, Wrappers.packetTypes) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketType packetType = event.getPacketType();
@@ -65,12 +68,10 @@ public class TagListener implements Listener {
 
                     BaseTag tag = (BaseTag) TagAPI.getTagTracker().getEntityTag(entityID);
                     if (tag == null) {
-                        Entity entity = ProtocolLibrary.getProtocolManager().getEntityFromID(event.getPlayer().getWorld(), entityID);
-                        if (entity == null || !TagAPI.entityDefaultTags.containsKey(entity.getType()) || (entity.hasMetadata("had-default-tag")))
+                        if (initiatingEntitiesToIgnore.contains(entityID))
                             return;
-
-                        entity.setMetadata("had-default-tag", new FixedMetadataValue(TagAPI.getPlugin(), true));
-                        Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> TagAPI.entityDefaultTags.get(entity.getType()).apply(entity).giveTag(), 1L);
+                        initiatingEntitiesToIgnore.add(entityID);
+                        Bukkit.getScheduler().runTaskLater(TagAPI.getPlugin(), () -> createTagForSpawnedEntity(entityID, event.getPlayer().getWorld()), 1L);
                         return;
                     }
 
@@ -208,8 +209,18 @@ public class TagListener implements Listener {
         Bukkit.getScheduler().cancelTask(this.taskID);
     }
 
+    public void createTagForSpawnedEntity(int entityID, World world) {
+        Entity entity = ProtocolLibrary.getProtocolManager().getEntityFromID(world, entityID);
+        if (entity == null || !TagAPI.entityDefaultTags.containsKey(entity.getType()) || (entity.hasMetadata("had-default-tag")))
+            return;
+
+        entity.setMetadata("had-default-tag", new FixedMetadataValue(TagAPI.getPlugin(), true));
+        TagAPI.entityDefaultTags.get(entity.getType()).apply(entity).giveTag();
+        initiatingEntitiesToIgnore.remove(entityID);
+    }
+
     public void setupTask() {
-        if(this.taskID != -1)
+        if (this.taskID != -1)
             Bukkit.getScheduler().cancelTask(this.taskID);
         this.taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(TagAPI.getPlugin(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {

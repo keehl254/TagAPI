@@ -5,6 +5,7 @@ import com.lkeehl.tagapi.tags.BaseTagEntity;
 import com.lkeehl.tagapi.util.VersionFile;
 import com.lkeehl.tagapi.wrappers.versions.Wrapper1_17_1;
 import com.lkeehl.tagapi.wrappers.versions.Wrapper1_18_1;
+import com.lkeehl.tagapi.wrappers.versions.Wrapper1_19_1;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -40,8 +41,10 @@ public class TagAPI {
 
         if ("v1_17_R1".equals(version))
             Wrapper1_17_1.init(versionFile);
-        else // On Update, replace with switch and default.
+        else if (version.startsWith("v1_18"))
             Wrapper1_18_1.init(versionFile);
+        else
+            Wrapper1_19_1.init(versionFile);
 
         tagTracker = new TagTracker();
         Bukkit.getPluginManager().registerEvents(listener = new TagListener(), javaPlugin);

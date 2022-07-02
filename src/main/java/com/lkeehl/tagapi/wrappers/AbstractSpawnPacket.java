@@ -30,6 +30,8 @@ public abstract class AbstractSpawnPacket extends AbstractPacket{
 
     public abstract void setPitch(float value);
 
+    public abstract void setHeadYaw(float value);
+
     public abstract void setVelocityX(int value);
 
     public abstract void setVelocityY(int value);

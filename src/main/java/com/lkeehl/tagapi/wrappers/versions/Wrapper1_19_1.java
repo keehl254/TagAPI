@@ -14,12 +14,12 @@ import java.util.UUID;
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_TELEPORT;
 
-public class Wrapper1_17_1 {
+public class Wrapper1_19_1 {
 
     private static VersionFile versionFile;
 
     public static void init(VersionFile versionFile) {
-        Wrapper1_17_1.versionFile = versionFile;
+        Wrapper1_19_1.versionFile = versionFile;
 
         Wrappers.DESTROY_W_CONTAINER = DestroyWrapper::new;
         Wrappers.DESTROY = DestroyWrapper::new;
@@ -27,9 +27,9 @@ public class Wrapper1_17_1 {
         Wrappers.METADATA = MetaDataWrapper::new;
         Wrappers.MOUNT = MountWrapper::new;
         Wrappers.SPAWN_ENTITY = SpawnEntityWrapper::new;
-        Wrappers.SPAWN_ENTITY_LIVING = SpawnEntityLivingWrapper::new;
+        Wrappers.SPAWN_ENTITY_LIVING = SpawnEntityWrapper::new;
 
-        Wrappers.packetTypes = new PacketType[]{SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_LOOK, ENTITY_TELEPORT};
+        Wrappers.packetTypes = new PacketType[]{SPAWN_ENTITY, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_LOOK, ENTITY_TELEPORT};
     }
 
     public static class DestroyWrapper extends Wrappers.DestroyPacket {
@@ -129,19 +129,6 @@ public class Wrapper1_17_1 {
         }
 
         @Override
-        public void setYaw(float value) {
-            handle.getIntegers().write(5, (int) (value * 256.0F / 360.0F));
-        }
-
-        @Override
-        public void setHeadYaw(float value) {}
-
-        @Override
-        public void setPitch(float value) {
-            handle.getIntegers().write(4, (int) (value * 256.0F / 360.0F));
-        }
-
-        @Override
         public void setVelocityX(int value) {
             handle.getIntegers().write(1, (int) (value * 8000.0D));
         }
@@ -173,32 +160,7 @@ public class Wrapper1_17_1 {
 
         @Override
         public void setObjectData(int value) {
-            handle.getIntegers().write(6, value);
-        }
-    }
-
-    public static class SpawnEntityLivingWrapper extends Wrappers.SpawnEntityLivingPacket {
-
-        @Override
-        public void setID(int entityID) {
-            this.getHandle().getIntegers().write(0, entityID);
-        }
-
-        @Override
-        public void setUUID(UUID uuid) {
-            this.getHandle().getUUIDs().write(0, uuid);
-        }
-
-        @Override
-        public void setType(EntityType type) {
-            handle.getIntegers().write(1, versionFile.getEntityID(type));
-        }
-
-        @Override
-        public void setLocation(Location location) {
-            handle.getDoubles().write(0, location.getX());
-            handle.getDoubles().write(1, location.getY());
-            handle.getDoubles().write(2, location.getZ());
+            handle.getIntegers().write(4, value);
         }
 
         @Override
@@ -209,21 +171,6 @@ public class Wrapper1_17_1 {
         @Override
         public void setPitch(float value) {
             handle.getBytes().write(1, (byte) (value * 256.0F / 360.0F));
-        }
-
-        @Override
-        public void setVelocityX(int value) {
-            handle.getIntegers().write(2, value);
-        }
-
-        @Override
-        public void setVelocityY(int value) {
-            handle.getIntegers().write(3, value);
-        }
-
-        @Override
-        public void setVelocityZ(int value) {
-            handle.getIntegers().write(4, value);
         }
 
         @Override

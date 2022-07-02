@@ -1,5 +1,6 @@
 package com.lkeehl.tagapi.wrappers.versions;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.lkeehl.tagapi.util.VersionFile;
@@ -9,6 +10,9 @@ import org.bukkit.entity.EntityType;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.comphenix.protocol.PacketType.Play.Server.*;
+import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_TELEPORT;
 
 public class Wrapper1_18_1 {
 
@@ -24,6 +28,8 @@ public class Wrapper1_18_1 {
         Wrappers.MOUNT = MountWrapper::new;
         Wrappers.SPAWN_ENTITY = SpawnEntityWrapper::new;
         Wrappers.SPAWN_ENTITY_LIVING = SpawnEntityLivingWrapper::new;
+
+        Wrappers.packetTypes = new PacketType[]{SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_DESTROY, NAMED_ENTITY_SPAWN, ENTITY_METADATA, PLAYER_INFO, REL_ENTITY_MOVE, REL_ENTITY_MOVE_LOOK, ENTITY_LOOK, ENTITY_TELEPORT};
     }
 
     public static class DestroyWrapper extends Wrappers.DestroyPacket {
@@ -128,6 +134,10 @@ public class Wrapper1_18_1 {
         }
 
         @Override
+        public void setHeadYaw(float value) {
+        }
+
+        @Override
         public void setPitch(float value) {
             handle.getIntegers().write(4, (int) (value * 256.0F / 360.0F));
         }
@@ -218,7 +228,7 @@ public class Wrapper1_18_1 {
         }
 
         @Override
-        public void setHeadPitch(float value) {
+        public void setHeadYaw(float value) {
             handle.getBytes().write(2, (byte) (value * 256.0F / 360.0F));
         }
     }

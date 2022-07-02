@@ -1,5 +1,5 @@
 name: TagAPI
-version: 1.1.2
+version: 1.2.1
 author: Keehl
 main: com.lkeehl.tagapi.manager.TagManager
 api-version: '1.13'

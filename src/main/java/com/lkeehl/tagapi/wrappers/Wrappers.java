@@ -10,13 +10,15 @@ import java.util.function.Supplier;
 
 public class Wrappers {
 
-    public static Supplier<SpawnEntityPacket> SPAWN_ENTITY;
-    public static Supplier<SpawnEntityLivingPacket> SPAWN_ENTITY_LIVING;
+    public static Supplier<AbstractSpawnPacket> SPAWN_ENTITY;
+    public static Supplier<AbstractSpawnPacket> SPAWN_ENTITY_LIVING;
     public static Supplier<MountPacket> MOUNT;
     public static Supplier<MetaDataPacket> METADATA;
     public static Function<PacketContainer, MetaDataPacket> METADATA_W_CONTAINER;
     public static Supplier<DestroyPacket> DESTROY;
     public static Function<PacketContainer,DestroyPacket> DESTROY_W_CONTAINER;
+
+    public static PacketType[] packetTypes;
 
     public abstract static class SpawnEntityPacket extends AbstractSpawnPacket {
 
@@ -33,6 +35,11 @@ public class Wrappers {
 
         public abstract void setObjectData(int value);
 
+        public abstract void setPitch(float value);
+
+        public abstract void setYaw(float value);
+
+        public abstract void setHeadYaw(float value);
 
     }
 
@@ -42,8 +49,6 @@ public class Wrappers {
             super(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
             handle.getModifier().writeDefaults();
         }
-
-        public abstract void setHeadPitch(float value);
 
     }
 

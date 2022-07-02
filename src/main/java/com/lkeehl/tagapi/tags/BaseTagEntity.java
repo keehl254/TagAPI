@@ -130,11 +130,12 @@ public class BaseTagEntity implements TagEntity {
         wrapper.setVelocityZ(0);
         wrapper.setPitch(0.0F);
         wrapper.setYaw(0.0F);
+        wrapper.setHeadYaw(0.0F);
 
         if (wrapper instanceof Wrappers.SpawnEntityPacket objectWrapper)
             objectWrapper.setObjectData(0);
         else {
-            ((Wrappers.SpawnEntityLivingPacket) wrapper).setHeadPitch(0.0F);
+            ((Wrappers.SpawnEntityLivingPacket) wrapper).setHeadYaw(0.0F);
         }
 
         return wrapper;

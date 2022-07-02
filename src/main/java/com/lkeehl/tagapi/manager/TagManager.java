@@ -8,6 +8,7 @@ public class TagManager extends JavaPlugin {
     @Override()
     public void onEnable() {
         TagAPI.onEnable(this);
+        TagAPI.listenForMovement();
     }
 
     @Override()
