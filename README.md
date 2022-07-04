@@ -53,7 +53,7 @@ Easy! There are two ways you can use this resource. This resource can either be 
     <dependency>
         <groupId>com.lkeehl</groupId>
         <artifactId>tagapi</artifactId>
-        <version>1.1.3</version>
+        <version>1.2.1</version>
     </dependency>
 
 <br>If you are directly integrating this API into your own code, then the methods to enable and disable it are simple:
