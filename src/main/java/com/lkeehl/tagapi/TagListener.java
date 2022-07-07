@@ -216,7 +216,7 @@ public class TagListener implements Listener {
 
         entity.setMetadata("had-default-tag", new FixedMetadataValue(TagAPI.getPlugin(), true));
         TagAPI.entityDefaultTags.get(entity.getType()).apply(entity).giveTag();
-        initiatingEntitiesToIgnore.remove(entityID);
+        initiatingEntitiesToIgnore.remove(Integer.valueOf(entityID));
     }
 
     public void setupTask() {
