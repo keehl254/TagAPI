@@ -12,7 +12,9 @@ public interface TagLine {
      *
      * @return This TagLine so that this class can be used in a builder format.
      */
-    TagLine setGetName(Function<Player, String> getName);
+    TagLine setText(Function<Player, String> getName);
+
+    @Deprecated TagLine setGetName(Function<Player, String> getName);
 
     /**
      * Provides a Function that determines whether this line should still be visible to a given player even if the line is null.
@@ -70,7 +72,7 @@ public interface TagLine {
      *
      * @return A boolean representing if this line is within the body of the target entity.
      */
-    boolean isInBody();
+    boolean interceptsTargetsBody();
 
     /**
      * Returns a line that will be visible to the provided player.
@@ -78,6 +80,8 @@ public interface TagLine {
      * @param viewer The player that is being checked.
      * @return The line that should show for the provided player.
      */
-    String getNameFor(Player viewer);
+    String getTextFor(Player viewer);
+
+    @Deprecated String getNameFor(Player viewer);
 
 }

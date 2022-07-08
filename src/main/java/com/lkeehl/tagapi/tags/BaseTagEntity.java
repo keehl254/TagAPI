@@ -150,7 +150,7 @@ public class BaseTagEntity implements TagEntity {
         String name;
         if (transparentName)
             TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.INVISIBLE_CROUCH), Byte.class, (byte) 34);
-        if (this.nameEntity && (name = this.tagLine.getNameFor(viewer)) != null && showName) {
+        if (this.nameEntity && (name = this.tagLine.getTextFor(viewer)) != null && showName) {
             TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.NAME_VISIBLE), Boolean.class, true); // Name Visible
             TagUtil.applyData(watcher, versionFile.getDataWatcherIndex(this.entityType, WatcherType.CUSTOM_NAME), WrappedDataWatcher.Registry.getChatComponentSerializer(true), Optional.ofNullable(IChatBaseComponent.ChatSerializer.a(ComponentSerializer.toString(TextComponent.fromLegacyText(name)))));
         }

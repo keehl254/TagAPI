@@ -53,7 +53,7 @@ Easy! There are two ways you can use this resource. This resource can either be 
     <dependency>
         <groupId>com.lkeehl</groupId>
         <artifactId>tagapi</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.3</version>
     </dependency>
 
 <br>If you are directly integrating this API into your own code, then the methods to enable and disable it are simple:
@@ -79,9 +79,9 @@ Tags can be created by using the Builder or Tag.create(entity) method like so:
     // or
 
     Tag tag = Tag.create(entity); // Create a new Tag
-    tag.addTagLine(10).setGetName(pl->"First Line");
-    tag.addTagLine(9).setGetName(pl->"Second Line");
-    tag.addTagLine(8).setGetName(pl->"Third Line").setKeepSpaceWhenNull(pl -> false);
+    tag.addTagLine(10).setText(pl->"First Line");
+    tag.addTagLine(9).setText(pl->"Second Line");
+    tag.addTagLine(8).setText(pl->"Third Line").setKeepSpaceWhenNull(pl -> false);
     
 <br>
 For each TagLine, you are able to customize two settings: What the line should return and whether the line should be visible if the line is null. In the TagBuilder, the line text is the first argument in the withLine method whereas the keepSpaceWhenNull setting an optional second argument.

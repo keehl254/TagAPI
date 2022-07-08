@@ -20,7 +20,7 @@ public class BaseTagLine implements TagLine {
 
     private final Map<UUID, Boolean> visibilityMap = new HashMap<>();
 
-    private Function<Player, String> getName;
+    private Function<Player, String> textFunction;
     private Function<Player, Boolean> keepSpaceWhenNull;
 
     private final int importance;
@@ -50,7 +50,7 @@ public class BaseTagLine implements TagLine {
         tempEntity = new BaseTagEntity(this, tempEntity, EntityType.SLIME);
         topEntity = new BaseTagEntity(this, tempEntity, EntityType.ARMOR_STAND, true);
 
-        getName = (x) -> null;
+        textFunction = (x) -> null;
         keepSpaceWhenNull = (x) -> true;
     }
 
@@ -66,9 +66,13 @@ public class BaseTagLine implements TagLine {
         this.bottomEntity.stopTrackingLine();
     }
 
-    public BaseTagLine setGetName(Function<Player, String> getName) {
-        this.getName = getName;
+    public BaseTagLine setText(Function<Player, String> textFunction) {
+        this.textFunction = textFunction;
         return this;
+    }
+
+    public BaseTagLine setGetName(Function<Player, String> getName) {
+        return this.setText(getName);
     }
 
     public BaseTagLine setKeepSpaceWhenNull(Function<Player, Boolean> keepSpaceWhenNull) {
@@ -109,11 +113,11 @@ public class BaseTagLine implements TagLine {
     }
 
     public boolean shouldHideFrom(Player viewer) {
-        String name = getName.apply(viewer);
+        String name = textFunction.apply(viewer);
         return !this.isVisibleTo(viewer) || (name == null && !keepSpaceWhenNull.apply(viewer));
     }
 
-    public boolean isInBody() {
+    public boolean interceptsTargetsBody() {
         return this.isInBody;
     }
 
@@ -148,8 +152,12 @@ public class BaseTagLine implements TagLine {
         return entities;
     }
 
+    public String getTextFor(Player viewer) {
+        return this.textFunction.apply(viewer);
+    }
+
     public String getNameFor(Player viewer) {
-        return this.getName.apply(viewer);
+        return this.textFunction.apply(viewer);
     }
 
 

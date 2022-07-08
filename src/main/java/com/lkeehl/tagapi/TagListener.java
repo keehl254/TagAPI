@@ -172,7 +172,7 @@ public class TagListener implements Listener {
                         return;
 
                     TagLine tagLine = TagAPI.getTagTracker().getTagEntity(entityID).getTagLine();
-                    if (!tagLine.isInBody())
+                    if (!tagLine.interceptsTargetsBody())
                         return;
 
                     Entity entity = tagLine.getTag().getTarget();

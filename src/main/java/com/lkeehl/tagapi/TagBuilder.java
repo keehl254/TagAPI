@@ -19,23 +19,23 @@ public class TagBuilder {
     /**
      * Creates a line with a provided Player -> String line function.
      *
-     * @param getName A Function that determines what the line should say to the provided player.
+     * @param textFunction A Function that determines what the line should say to the provided player.
      * @return This tag builder.
      */
-    public TagBuilder withLine(Function<Player, String> getName) {
-        this.tag.addTagLine(priority--).setGetName(getName);
+    public TagBuilder withLine(Function<Player, String> textFunction) {
+        this.tag.addTagLine(priority--).setText(textFunction);
         return this;
     }
 
     /**
      * Creates a line with a provided Player -> String line function as well as a Player -> Boolean for null space checks.
      *
-     * @param getName A Function that determines what the line should say to the provided player.
+     * @param textFunction A Function that determines what the line should say to the provided player.
      * @param keepSpaceWhenNull A Function that determines whether the line should be visible if the line is null to the provided player.
      * @return This tag builder.
      */
-    public TagBuilder withLine(Function<Player, String> getName, Function<Player, Boolean> keepSpaceWhenNull) {
-        this.tag.addTagLine(priority--).setGetName(getName).setKeepSpaceWhenNull(keepSpaceWhenNull);
+    public TagBuilder withLine(Function<Player, String> textFunction, Function<Player, Boolean> keepSpaceWhenNull) {
+        this.tag.addTagLine(priority--).setText(textFunction).setKeepSpaceWhenNull(keepSpaceWhenNull);
         return this;
     }
 
