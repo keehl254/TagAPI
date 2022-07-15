@@ -50,6 +50,8 @@ public class BaseTagEntity implements TagEntity {
     private static AtomicInteger atomicEntityID;
 
     public static void init(VersionFile file) {
+        entityWatchers.clear();
+
         versionFile = file;
         List<EntityType> mobs = Arrays.asList(EntityType.ARMOR_STAND, EntityType.SILVERFISH, EntityType.SLIME, EntityType.TROPICAL_FISH, EntityType.TURTLE);
 
