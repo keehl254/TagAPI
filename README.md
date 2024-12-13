@@ -1,4 +1,4 @@
-# TagAPI
+# TagAPI (Dropped Project for now)
 <img src="https://i.imgur.com/87cSmdB.png" align="right" alt="A picture of a player with a custom title under their name" style="max-width:280px;width:50%;">
 I have frequently come across the question from developers on both the Spigot forums and discord servers that asks how to create customizable text under a players name. A system that provides unlockable "titles" under a players name has been a staple in a server for over two years that I have developed for, and I wished to share the method which I use to create them.
 <br>
